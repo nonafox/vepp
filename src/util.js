@@ -11,8 +11,8 @@ export default {
     },
     defaultOpts: {
         'TEXT': {
-            ':align_v': '.align.CENTER_V',
-            ':align_h': '.align.CENTER_H'
+            align_v: hmUI.align.CENTER_V,
+            align_h: hmUI.align.CENTER_H
         }
     },
     
