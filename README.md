@@ -26,7 +26,8 @@ WatchFace({
                     @click_up="onclick"
                     #w="50%"
                     #h="50%"
-                    $.visible="show">
+                    $.visible="show"
+                    :text_style=".text_style.NONE">
                 </text>
             `
         })
