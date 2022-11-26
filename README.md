@@ -49,4 +49,4 @@ Vepp allows you to define functions in `data` option. In fact, you must define y
 - `$name="expression"`             // property that binds with reactive variable
 - `[prefix].name="value"`          // property that cannot be set with `hmUI.prop.MORE` flag. this can be used with other formats above
 
-Besides, Vepp prepares polyfills for you. For example, you can use `setTimeout()` and `setInterval()` freely with the help with Vepp!
+Besides, Vepp prepares polyfills for you. For example, you can use `setTimeout()` and `setInterval()` freely with the help of Vepp!
