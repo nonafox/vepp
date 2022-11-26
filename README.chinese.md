@@ -43,7 +43,6 @@ WatchFace({
 ```
 可以看到，Vepp的options有两个：`data`和`html`。顾名思义，通过`data` option初始化响应性变量、函数，通过`html` option以HTML的形式初始化UI界面。不同于Vior，Vepp中的响应性变量、函数都必须在`data` option中定义。
 
-`html` option is a lot different compares to Vior. First, HTML tags stand for widget names in ZeppOS, e.g. `text`, `img`, `circle`. Second, HTML attributes stand for widget properties and events. Here are HTML attributes' format rules:
 在`html` option中，HTML元素、属性的使用与Vior大有不同。HTML元素标签名对应ZeppOS中的控件名（如`text`、`img`、`circle`）；HTML属性格式如下：
 
 - `name="string"`                  // 字符串属性
