@@ -8,12 +8,12 @@ export function createProxy(obj, notifier, _this) {
                 t[k] = (...args) => v.call(_this, ...args)
             else
                 t[k] = v
-            notifier.call(_this)
+            notifier.call(_this, k)
             return true
         },
         deleteProperty(t, k) {
             delete t[k]
-            notifier.call(_this)
+            notifier.call(_this, k)
             return true
         },
         getOwnPropertyDescriptor(t, k) {
