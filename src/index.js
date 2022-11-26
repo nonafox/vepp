@@ -24,7 +24,7 @@ export default class Vepp {
     formatAttrs(_attrs) {
         if (! _attrs)
             return {}
-        let attrs = Util.deepCopy(_attrs)
+        let attrs = Object.assign({}, _attrs)
         for (let k in attrs) {
             let v = attrs[k]
             if (k.charAt(0) == ':') {
@@ -58,9 +58,9 @@ export default class Vepp {
         return attrs
     }
     init(_tree, deepCopy = true, widgetCtor = hmUI) {
-        let tree = deepCopy ? Util.deepCopy(_tree) : _tree
-        if (! Array.isArray(tree))
-            return this.init(tree.children)
+        if (! Array.isArray(_tree))
+            return this.init(_tree.children)
+        let tree = deepCopy ? Object.assign([], _tree) : _tree
         
         for (let k in tree) {
             let v = tree[k]
@@ -72,7 +72,7 @@ export default class Vepp {
             let tag = v.tag.toUpperCase(),
                 type = hmUI.widget[tag]
             let t = this, oattrs = v.attrs
-            let opts_func = () => Util.deepCopy({
+            let opts_func = () => Object.assign({
                 x: 0,
                 y: 0,
                 w: Util.deviceWidth,
