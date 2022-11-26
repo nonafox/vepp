@@ -40,7 +40,7 @@ As you see, Vepp's constructor takes 2 options: `data` option and `html` option.
 Vepp allows you to define functions in `data` option. In fact, you must define your functions in it.
 `html` option is a lot different compares to Vior. First, HTML tags stand for widget names in ZeppOS, e.g. `text`, `img`, `circle`. Second, HTML attributes stand for widget properties and events. Here are HTML attributes' format rules:
 - `name="string"`                  // string property
-- `:name="expression"`             // property with Zepp's constants (hmUI.xxx.xxx)
+- `:name="expression"`             // property with Zepp's constants (seem like `hmUI.xxx.xxx`)
 - `#name="expression"`             // number property
 - `$name="expression"`             // property that binds with reactive variable
 - `[prefix].name="value"`          // property that cannot be set with `hmUI.prop.MORE` flag. this can be used with other formats above
