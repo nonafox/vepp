@@ -1,8 +1,12 @@
 # Vepp
 A simple framework for ZeppOS programs, using some of parts of my other project [Vior](https://github.com/jwhgzs/vior).
 
+# Languages
+- English (current)
+- [Chinese](https://github.com/jwhgzs/vepp/blob/master/README.chinese.md)
+
 # Before start
-What Vepp will do is to build UI and update it reactively, just like Vue, Vior and many other JS frameworks. But there is a big problem, that is in ZeppOS, `eval` and `new Function()` are both disabled. It is so limited that you cannot use Vepp in the same way as Vue and Vior completely. That is why Vepp is whole independent from Vior.
+What Vepp will do is to build UI and update it reactively, just like Vue, Vior and many other JS frameworks. But there is a big problem, that is in ZeppOS, `eval()` and `new Function()` are both disabled. It is so limited that you cannot use Vepp in the same way as Vue and Vior completely. That is why Vepp is whole independent from Vior.
 
 # Getting started
 Here is a example for ZeppOS watchface program:
@@ -47,6 +51,6 @@ Vepp allows you to define functions in `data` option. In fact, you must define y
 - `:name="expression"`             // property with Zepp's constants (seem like `hmUI.xxx.xxx`)
 - `#name="expression"`             // number property
 - `$name="expression"`             // property that binds with reactive variable
-- `[prefix].name="value"`          // property that cannot be set with `hmUI.prop.MORE` flag. this can be used with other formats above
+- `[prefix].name="value"`          // property that cannot be set with `hmUI.prop.MORE` flag. this can be used with other formats above. `[prefix]` can be: ``,`:`,`#`,`$`
 
 Besides, Vepp prepares polyfills for you. For example, you can use `setTimeout()` and `setInterval()` freely with the help of Vepp!
