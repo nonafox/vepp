@@ -50,6 +50,6 @@ WatchFace({
 - `:name="expression"`             // 带有ZeppOS常量的属性（形如 `hmUI.xxx.xxx`）
 - `#name="expression"`             // 数字属性
 - `$name="expression"`             // 响应性属性
-- `[prefix].name="value"`          // 单设属性标记，标记该属性不能用`hmUI.prop.MORE`方式批量设置。该格式可与上述任一其他格式并存。`[prefix]`可选值：``,`:`,`#`,`$`
+- `[prefix].name="value"`          // 单设属性标记，标记该属性不能用`hmUI.prop.MORE`方式批量设置。该格式可与上述任一其他格式并存。`[prefix]`可选值：` ` `:` `#` `$`
 
 另外，Vepp自带了许多实用的polyfills。如`setTimeout()`和`setInterval()`可以直接正常使用！
