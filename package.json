@@ -1,0 +1,27 @@
+{
+  "name": "vepp",
+  "version": "0.1.1",
+  "description": "A simple framework for ZeppOS programs.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "zepp",
+    "vue",
+    "vior"
+  ],
+  "author": "jwhgzs",
+  "license": "MIT",
+  "devDependencies": {
+    "@zeppos/device-types": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwhgzs/vepp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jwhgzs/vepp/issues"
+  },
+  "homepage": "https://github.com/jwhgzs/vepp#readme"
+}
