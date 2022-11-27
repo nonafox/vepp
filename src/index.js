@@ -1,4 +1,4 @@
-import './polyfill/device-polyfill'
+import './polyfill/device-polyfill.js'
 
 import { createProxy } from './proxy.js'
 import TDom from './tdom.js'

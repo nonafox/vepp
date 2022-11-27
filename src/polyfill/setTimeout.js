@@ -1,5 +1,5 @@
-import { isHmTimerDefined } from './js-module'
-import { getGlobal } from './global'
+import { isHmTimerDefined } from './js-module.js'
+import { getGlobal } from './global.js'
 
 let globalNS = getGlobal()
 

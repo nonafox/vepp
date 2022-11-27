@@ -1,3 +1,3 @@
-import './logger'
-import './buffer'
-import './setTimeout'
+import './logger.js'
+import './buffer.js'
+import './setTimeout.js'

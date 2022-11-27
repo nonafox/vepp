@@ -1,4 +1,4 @@
-import Util from './util'
+import Util from './util.js'
 
 export function createProxy(obj, notifier, _this, key = null) {
     for (let k in obj) {

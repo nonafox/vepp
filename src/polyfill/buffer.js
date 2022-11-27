@@ -1,4 +1,4 @@
-import { getGlobal } from './global'
+import { getGlobal } from './global.js'
 
 let globalNS = getGlobal()
 
