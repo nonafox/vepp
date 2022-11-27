@@ -1,6 +1,7 @@
 {
   "name": "vepp",
-  "version": "0.2.5",
+  "type": "module",
+  "version": "0.3.0",
   "description": "A simple framework for ZeppOS programs.",
   "main": "src/index.js",
   "scripts": {
