@@ -15,6 +15,8 @@ export function createProxy(obj, notifier, _this, key = null) {
         set(t, k, v) {
             if (typeof v == 'function')
                 t[k] = (...args) => v.call(_this, ...args)
+            else if (Util.isPlainObject(v))
+                t[k] = createProxy(v, notifier, _this, key || k)
             else
                 t[k] = v
             notifier.call(_this, key || k)
