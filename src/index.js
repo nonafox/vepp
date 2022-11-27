@@ -71,7 +71,8 @@ export default class Vepp {
                     nattrs[k2] = v2
                 }
             }
-            v.dom = widgetCtor.createWidget(type, nattrs)
+            v.attrs = nattrs
+            v.dom = widgetCtor.createWidget(type, v.attrs)
 
             for (let k2 in v.attrs) {
                 let v2 = v.attrs[k2]
