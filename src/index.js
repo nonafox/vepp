@@ -65,10 +65,12 @@ export default class Vepp {
                     if (! (v2 in this.deps))
                         this.deps[v2] = []
                     this.deps[v2].push(() => {
+                        let ok2 = k2
                         if (k2.charAt(0) == '.')
                             k2 = k2.substring(1)
                         let pid = hmUI.prop[k2.toUpperCase()]
                         v.dom.setProperty(pid, t.data[v2])
+                        v.attrs[ok2] = t.data[v2]
                     })
                 } else {
                     nattrs[k2] = v2
