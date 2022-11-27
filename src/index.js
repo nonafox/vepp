@@ -8,14 +8,6 @@ export default class Vepp {
     constructor(opts) {
         this.html = opts.html || ''
         this.data = createProxy(opts.data || {}, this.update, this)
-        for (let k in this.data) {
-            let v = this.data[k], _this = this
-            if (typeof v == 'function') {
-                this.data[k] = (...args) => {
-                    v.call(_this, ...args)
-                }
-            }
-        }
         this.deps = {}
         
         this.tdom = new TDom()

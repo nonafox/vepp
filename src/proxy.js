@@ -10,7 +10,10 @@ export function createProxy(obj, notifier, _this, key = null) {
     
     return new Proxy(obj, {
         get(t, k) {
-            return t[k]
+            if (typeof t[k] == 'function')
+                return (...args) => t[k].call(_this, ...args)
+            else
+                return t[k]
         },
         set(t, k, v) {
             if (typeof v == 'function')
