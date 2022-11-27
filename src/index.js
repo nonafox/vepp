@@ -57,7 +57,10 @@ export default class Vepp {
                     }
                 } else if (k2.charAt(0) == '$') {
                     k2 = k2.substring(1)
-                    nattrs[k2] = this.data[v2]
+                    if (typeof this.data[v2] == 'function')
+                        nattrs[k2] = () => this.data[v2](v)
+                    else
+                        nattrs[k2] = this.data[v2]
                     let t = this
                     if (! (v2 in this.deps))
                         this.deps[v2] = []
