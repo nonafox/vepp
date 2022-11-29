@@ -1,110 +1,57 @@
 import './polyfill/device-polyfill.js'
 
-import { createProxy } from './proxy.js'
-import TDom from './tdom.js'
-import Util from './util.js'
+import { createProxy, createReactiveContext } from './proxy.js'
+import { newFunction } from './function.js'
 
 export default class Vepp {
     constructor(opts) {
-        this.html = opts.html || ''
+        this.ui = opts.html || ''
         this.data = createProxy(opts.data || {}, this.update, this)
         this.deps = {}
-        
-        this.tdom = new TDom()
-        let tree = this.tdom.read(this.html)
-        this.tree = this.init(typeof tree == 'object' ? tree : [])
+        this.parse(this.ui)
     }
-    init(tree, widgetCtor = hmUI) {
-        if (! Array.isArray(tree))
-            return this.init(tree.children)
-        
-        for (let k in tree) {
-            let v = tree[k]
-            if (! v.tag) {
-                delete tree[k]
-                continue
-            }
-            
-            let tag = v.tag.toUpperCase(),
-                type = hmUI.widget[tag]
-            let attrs = v.attrs, nattrs = Object.assign({
-                x: 0,
-                y: 0,
-                w: Util.deviceWidth,
-                h: Util.deviceHeight
-            }, Util.defaultOpts[tag])
-            for (let k2 in attrs) {
-                let v2 = attrs[k2]
-                if (k2.charAt(0) == ':') {
-                    k2 = k2.substring(1)
-                    let vs = v2.split('.')
-                    vs.splice(0, 1)
-                    v2 = hmUI[vs[0]]
-                    v2 = ! v2 ? {} : v2
-                    v2 = v2[vs[1]]
-                    nattrs[k2] = v2
-                } else if (k2.charAt(0) == '#') {
-                    k2 = k2.substring(1)
-                    if (v2.charAt(v2.length - 1) == '%') {
-                        let perc = Number(v2.substring(0, v2.length - 1)) / 100
-                        if (k2 == 'x' || k2 == 'w')
-                            perc *= Util.deviceWidth
-                        else if (k2 == 'y' || k2 == 'h')
-                            perc *= Util.deviceHeight
-                        nattrs[k2] = perc
-                    } else {
-                        nattrs[k2] = Number(v2)
+    parse(rcode) {
+        let lines = rcode.split('\n')
+        for (let line in lines) {
+            let code = lines[line]
+            let reg = /\s*#([A-Z_]+)\s+(.*)\s*/,
+                { 1: tag, 2: attrs } = code.match(reg)
+            let attrsParser = function () {
+                return newFunction(`
+                    with (this.data) {
+                        return { ${attrs} }
                     }
-                } else if (k2.charAt(0) == '$') {
-                    k2 = k2.substring(1)
-                    if (typeof this.data[v2] == 'function' && k2.charAt(0) == '@') {
-                        k2 = k2.substring(1)
-                        nattrs[k2] = () => this.data[v2](v)
-                    } else {
-                        nattrs[k2] = this.data[v2]
-                    }
-                    let t = this
-                    if (! (v2 in this.deps))
-                        this.deps[v2] = []
-                    this.deps[v2].push(() => {
-                        let ok2 = k2
-                        if (k2.charAt(0) == '.')
-                            k2 = k2.substring(1)
-                        let pid = hmUI.prop[k2.toUpperCase()]
-                        v.dom.setProperty(pid, t.data[v2])
-                        v.attrs[ok2] = t.data[v2]
-                    })
-                } else {
-                    nattrs[k2] = v2
-                }
+                `).call(this)
             }
-            v.attrs = nattrs
-            v.dom = widgetCtor.createWidget(type, v.attrs)
+            let nattrs
+            let deps = createReactiveContext(function () {
+                nattrs = attrsParser()
+            }, this)
 
-            for (let k2 in v.attrs) {
-                let v2 = v.attrs[k2]
-                if (k2.charAt(0) == '@') {
-                    delete v.attrs[k2]
-                    k2 = k2.substring(1).toUpperCase()
-                    v.dom.addEventListener(hmUI.event[k2], this.data[v2])
-                } else if (k2.charAt(0) == '.') {
-                    delete v.attrs[k2]
-                    k2 = k2.substring(1).toUpperCase()
-                    v.dom.setProperty(hmUI.prop[k2], v2)
+            let widget = hmUI.createWidget(hmUI.widget[tag], {})
+            let attrsPusher = (arr) => {
+                for (let k in arr) {
+                    let v = arr[k]
+                    widget.setProperty(hmUI.prop[k.toUpperCase()], v)
                 }
             }
-            
-            if (tag == 'GROUP') {
-                this.init(v.children, v.dom)
+            attrsPusher(nattrs)
+
+            let updater = () => attrsPusher(attrsParser())
+            for (let k in deps) {
+                if (! (k in this.deps))
+                    this.deps[k] = []
+                this.deps[k].push(updater)
             }
         }
-        return tree
     }
-    update(key) {
-        let list = this.deps[key] || []
-        for (let k in list) {
-            let v = list[k]
-            v()
+    update() {
+        for (let k in this.deps) {
+            let v = this.deps[k]
+            for (let k2 in v) {
+                let v2 = v[k2]
+                v2()
+            }
         }
     }
 }

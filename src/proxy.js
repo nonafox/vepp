@@ -1,15 +1,27 @@
-import Util from './util.js'
+import { isPlainObject } from './util.js'
+
+let reactiveContext = null, reactiveDeps = []
+export function createReactiveContext(func, _this) {
+    reactiveContext = () => func.call(_this)
+    reactiveDeps = []
+    reactiveContext()
+    reactiveContext = null
+
+    return reactiveDeps
+}
 
 export function createProxy(obj, notifier, _this, key = null) {
     for (let k in obj) {
         let v = obj[k]
-        if (Util.isPlainObject(v)) {
+        if (isPlainObject(v)) {
             obj[k] = createProxy(v, notifier, _this, key || k)
         }
     }
     
     return new Proxy(obj, {
         get(t, k) {
+            if (reactiveContext)
+                reactiveDeps.push(key || k)
             if (typeof t[k] == 'function')
                 return (...args) => t[k].call(_this, ...args)
             else
@@ -18,7 +30,7 @@ export function createProxy(obj, notifier, _this, key = null) {
         set(t, k, v) {
             if (typeof v == 'function')
                 t[k] = (...args) => v.call(_this, ...args)
-            else if (Util.isPlainObject(v))
+            else if (isPlainObject(v))
                 t[k] = createProxy(v, notifier, _this, key || k)
             else
                 t[k] = v
