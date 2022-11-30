@@ -20,12 +20,14 @@ export default class Vepp {
             if (! matched)
                 continue
             let { 1: tag, 2: attrs } = matched, t = this
+            
+            let attrsParser0 = newFunction(`
+                with (this.data) {
+                    return { ${attrs} }
+                }
+            `)
             let attrsParser = function () {
-                return newFunction(`
-                    with (this.data) {
-                        return { ${attrs} }
-                    }
-                `).call(t)
+                return attrsParser0.call(t)
             }
             let nattrs = {}
             let deps = createReactiveContext(function () {
