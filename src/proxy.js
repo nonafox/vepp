@@ -20,7 +20,7 @@ export function createProxy(obj, notifier, _this, key = null) {
     
     return new Proxy(obj, {
         get(t, k) {
-            if (reactiveContext)
+            if (reactiveContext && typeof k == 'string')
                 reactiveDeps.push(key || k)
             if (typeof t[k] == 'function')
                 return (...args) => t[k].call(_this, ...args)
