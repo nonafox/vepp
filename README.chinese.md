@@ -27,9 +27,9 @@ import Vepp from 'vepp'
 Page({
     build() {
         let { data: t } = new Vepp({
-            // 使用 VML (Vepp Markup Language) 创建控件、声明式定义properties，形式如下：
-            // #TAG    propName: expression, ...
-            // 不知你是否发现，#TAG 之后的部分跟JSON的一模一样！
+            // 使用 VML (Vepp Markup Language) 创建控件、声明式定义properties和events，形式如下：
+            // #TAG    propName: expression, '@eventName': expression, ...
+            // 不知你是否发现，#TAG 之后的部分跟很像JSON！
             ui: `
                 #TEXT    h: DEVICE_HEIGHT * 0.5, text: mytext, '@click_up': myfunc
             `,
