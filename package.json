@@ -1,8 +1,8 @@
 {
   "name": "vepp",
   "type": "module",
-  "version": "0.4.7",
-  "description": "A simple framework for ZeppOS programs.",
+  "version": "0.4.8",
+  "description": "A light JavaScript framework for ZeppOS.",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
