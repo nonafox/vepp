@@ -18,7 +18,7 @@ export function createProxy(obj, notifier, _this, key = null) {
         }
     }
     
-    let proxy = new Proxy(obj, {
+    const proxy = new Proxy(obj, {
         get(t, k) {
             if (reactiveContext)
                 reactiveDeps.push(key || k)
@@ -28,11 +28,13 @@ export function createProxy(obj, notifier, _this, key = null) {
                 return t[k]
         },
         set(t, k, v) {
-            if (isPlainObject(v))
-                t[k] = createProxy(v, notifier, _this, key || k)
-            else
-                t[k] = v
-            notifier.call(_this, key || k)
+            if (t[k] !== v) {
+                if (isPlainObject(v))
+                    t[k] = createProxy(v, notifier, _this, key || k)
+                else
+                    t[k] = v
+                notifier.call(_this, key || k)
+            }
             return true
         },
         deleteProperty(t, k) {

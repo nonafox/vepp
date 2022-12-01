@@ -31,12 +31,15 @@ Page({
             // #TAG    propName: expression, ...
             // 不知你是否发现，#TAG 之后的部分跟JSON的一模一样！
             ui: `
-                #TEXT    h: DEVICE_HEIGHT * 0.5, text: mytext
+                #TEXT    h: DEVICE_HEIGHT * 0.5, text: mytext, '@click_up': myfunc
             `,
             data: {
                 DEVICE_WIDTH: hmSetting.getDeviceInfo().width,
                 DEVICE_HEIGHT: hmSetting.getDeviceInfo().height,
-                mytext: 'hello, world'
+                mytext: 'hello, world',
+                myfunc() {
+                    console.log(this.mytext)
+                }
             }
         })
         

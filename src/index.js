@@ -29,7 +29,7 @@ export default class Vepp {
             let attrsParser = function () {
                 return attrsParser0.call(t)
             }
-            let nattrs = {}
+            let nattrs = {}, events = {}
             let deps = createReactiveContext(function () {
                 nattrs = attrsParser()
             }, this)
@@ -43,7 +43,15 @@ export default class Vepp {
             let attrsPusher = (arr) => {
                 for (let k in arr) {
                     let v = arr[k]
-                    widget.setProperty(hmUI.prop[k.toUpperCase()], v)
+                    if (k[0] == '@') {
+                        let id = hmUI.event[k.substring(1).toUpperCase()]
+                        if (events[id])
+                            widget.removeEventListener(id, v)
+                        widget.addEventListener(id, v)
+                        events[id] = v
+                    } else {
+                        widget.setProperty(hmUI.prop[k.toUpperCase()], v)
+                    }
                 }
             }
             attrsPusher(nattrs)
