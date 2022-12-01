@@ -1,7 +1,7 @@
 import './polyfill/device-polyfill.js'
 
 import { createProxy, createReactiveContext } from './proxy.js'
-import { newFunction } from './function.js'
+import { newFunction } from './util.js'
 import { defaultConfig, DEVICE_WIDTH, DEVICE_HEIGHT } from './defaultConfig.js'
 
 export default class Vepp {

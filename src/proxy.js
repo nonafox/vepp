@@ -18,19 +18,17 @@ export function createProxy(obj, notifier, _this, key = null) {
         }
     }
     
-    return new Proxy(obj, {
+    let proxy = new Proxy(obj, {
         get(t, k) {
-            if (reactiveContext && typeof k == 'string')
+            if (reactiveContext)
                 reactiveDeps.push(key || k)
             if (typeof t[k] == 'function')
-                return (...args) => t[k].call(_this, ...args)
+                return (...args) => t[k].call(proxy, ...args)
             else
                 return t[k]
         },
         set(t, k, v) {
-            if (typeof v == 'function')
-                t[k] = (...args) => v.call(_this, ...args)
-            else if (isPlainObject(v))
+            if (isPlainObject(v))
                 t[k] = createProxy(v, notifier, _this, key || k)
             else
                 t[k] = v
@@ -55,4 +53,5 @@ export function createProxy(obj, notifier, _this, key = null) {
             return k in t
         }
     })
+    return proxy
 }
