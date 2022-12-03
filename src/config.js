@@ -2,6 +2,12 @@ export const DEVICE_WIDTH = hmSetting.getDeviceInfo().width
 export const DEVICE_HEIGHT = hmSetting.getDeviceInfo().height
 
 export const defaultConfig = {
+    null: {
+        x: 0,
+        y: 0,
+        w: DEVICE_WIDTH,
+        h: DEVICE_HEIGHT
+    },
     'TEXT': {
         x: 0,
         y: 0,

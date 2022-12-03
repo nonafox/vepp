@@ -1,7 +1,7 @@
 import './polyfill.js'
 
 import { createProxy, createReactiveContext } from './proxy.js'
-import { defaultConfig, DEVICE_WIDTH, DEVICE_HEIGHT } from './defaultConfig.js'
+import { defaultConfig, DEVICE_WIDTH, DEVICE_HEIGHT } from './config.js'
 
 export default class Vepp {
     constructor(opts) {
@@ -35,12 +35,7 @@ export default class Vepp {
             let nattrs = {}, events = {}, deps = []
             ;({ res: nattrs, deps } = attrsParser())
 
-            let widget = hmUI.createWidget(hmUI.widget[tag], Object.assign(defaultConfig[tag] || {
-                x: 0,
-                y: 0,
-                w: DEVICE_WIDTH,
-                h: DEVICE_HEIGHT
-            }, nattrs))
+            let widget = hmUI.createWidget(hmUI.widget[tag], Object.assign(defaultConfig[tag] || defaultConfig[null], nattrs))
             let attrsPusher = (arr) => {
                 for (let k in arr) {
                     let v = arr[k]

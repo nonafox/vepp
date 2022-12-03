@@ -64,3 +64,5 @@ Vepp为你准备了多样的polyfills，具体如下：
 - function `clearInterval`
 - function `setImmediate`
 - function `clearImmediate`
+- function `console.time`
+- function `console.timeEnd`

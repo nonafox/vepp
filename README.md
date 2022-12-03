@@ -64,3 +64,5 @@ Vepp prepare varied polyfills for you, includes:
 - function `clearInterval`
 - function `setImmediate`
 - function `clearImmediate`
+- function `console.time`
+- function `console.timeEnd`
