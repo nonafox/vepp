@@ -1,7 +1,6 @@
-import './polyfill/device-polyfill.js'
+import './polyfill.js'
 
 import { createProxy, createReactiveContext } from './proxy.js'
-import { newFunction } from './util.js'
 import { defaultConfig, DEVICE_WIDTH, DEVICE_HEIGHT } from './defaultConfig.js'
 
 export default class Vepp {
@@ -21,18 +20,20 @@ export default class Vepp {
                 continue
             let { 1: tag, 2: attrs } = matched, t = this
             
-            let attrsParser0 = newFunction(`
+            let attrsParser0 = new Function(`
                 with (this.data) {
                     return { ${attrs} }
                 }
             `)
             let attrsParser = function () {
-                return attrsParser0.call(t)
+                let res, deps
+                deps = createReactiveContext(function () {
+                    res = attrsParser0.call(this)
+                }, t)
+                return { res: res, deps: deps }
             }
-            let nattrs = {}, events = {}
-            let deps = createReactiveContext(function () {
-                nattrs = attrsParser()
-            }, this)
+            let nattrs = {}, events = {}, deps = []
+            ;({ res: nattrs, deps } = attrsParser())
 
             let widget = hmUI.createWidget(hmUI.widget[tag], Object.assign(defaultConfig[tag] || {
                 x: 0,
@@ -56,7 +57,19 @@ export default class Vepp {
             }
             attrsPusher(nattrs)
 
-            let updater = () => attrsPusher(attrsParser())
+            let updater = () => {
+                let { res: nattrs, ndeps } = attrsParser()
+                attrsPusher(nattrs)
+                for (let k in ndeps) {
+                    let v = ndeps[k]
+                    if (deps.indexOf(v) < 0) {
+                        if (! (v in this.deps))
+                            this.deps[v] = []
+                        this.deps[v].push(updater)
+                        deps.push(v)
+                    }
+                }
+            }
             for (let k in deps) {
                 let v = deps[k]
                 if (! (v in this.deps))

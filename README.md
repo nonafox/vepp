@@ -44,10 +44,23 @@ Page({
         })
         
         // use `veppIns.data.xxx` to get or set your reactive variables
-        // by the way, Vepp prepare polyfills for you. you can use some functions like `setInterval()` freely!
+        // by the way, Vepp prepare polyfills for you. see more details below!
         setInterval(function () {
             t.mytext = 'Random: ' + (Math.random() * 100).toFixed()
         }, 1000)
     }
 })
 ```
+
+# Polyfills
+Vepp prepare varied polyfills for you, includes:
+
+- class `Buffer`
+- class `Function`
+- class `Logger`
+- function `setTimeout`
+- function `clearTimeout`
+- function `setInterval`
+- function `clearInterval`
+- function `setImmediate`
+- function `clearImmediate`
