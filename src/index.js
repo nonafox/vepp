@@ -53,7 +53,7 @@ export default class Vepp {
             attrsPusher(nattrs)
 
             let updater = () => {
-                let { res: nattrs, ndeps } = attrsParser()
+                let { res: nattrs, deps: ndeps } = attrsParser()
                 attrsPusher(nattrs)
                 for (let k in ndeps) {
                     let v = ndeps[k]

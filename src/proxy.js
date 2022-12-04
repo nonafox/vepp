@@ -6,7 +6,6 @@ export function createReactiveContext(func, _this) {
     reactiveDeps = []
     reactiveContext()
     reactiveContext = null
-
     return reactiveDeps
 }
 
