@@ -39,19 +39,20 @@ export default class Vepp {
             let attrsPusher = (arr) => {
                 for (let k in arr) {
                     let v = arr[k]
-                    if (nattrs[k] === v)
-                        continue
                     if (k[0] == '@') {
                         let id = hmUI.event[k.substring(1).toUpperCase()]
                         if (events[id])
                             widget.removeEventListener(id, v)
                         widget.addEventListener(id, v)
                         events[id] = v
+                        delete nattrs[k]
                     } else {
+                        if (nattrs[k] === v)
+                            continue
                         widget.setProperty(hmUI.prop[k.toUpperCase()], v)
+                        nattrs[k] = v
                     }
                 }
-                nattrs = arr
             }
             attrsPusher(nattrs)
 
