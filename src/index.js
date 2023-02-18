@@ -91,7 +91,7 @@ export default class Vepp {
     }
     unwatch(key, callback) {
         if (key in this.deps) {
-            let i = this.deps.indexOf(callback)
+            let i = this.deps[key].indexOf(callback)
             if (i >= 0)
                 this.deps[key].splice(i, 1)
         }
