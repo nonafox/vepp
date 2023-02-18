@@ -84,4 +84,16 @@ export default class Vepp {
             v2()
         }
     }
+    watch(key, callback) {
+        if (! (key in this.deps))
+            this.deps[key] = [];
+        this.deps[key].push(callback)
+    }
+    unwatch(key, callback) {
+        if (key in this.deps) {
+            let i = this.deps.indexOf(callback)
+            if (i >= 0)
+                this.deps[key].splice(i, 1)
+        }
+    }
 }

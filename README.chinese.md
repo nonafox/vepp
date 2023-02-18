@@ -42,6 +42,14 @@ Page({
                 }
             }
         })
+
+        // 使用 veppIns.watch(...) 来监听变量更变
+        // 对应地，可以使用 veppIns.unwatch(...) 取消监听
+        let tmp = () => {
+            console.log('mytext changed!')
+            t.unwatch('mytext', tmp)
+        }
+        t.watch('mytext', tmp)
         
         // 用 veppIns.data.xxx 的形式对动态变量进行取值或赋值
         // 另外，Vepp为你准备了多样的polyfills，这意味着你可以自由地使用 setInterval() 等等！请参见下文获取详细信息

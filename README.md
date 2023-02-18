@@ -42,6 +42,14 @@ Page({
                 }
             }
         })
+
+        // use `veppIns.watch(...)` to watch your variables
+        // and `veppIns.unwatch(...)` to unwatch them
+        let tmp = () => {
+            console.log('mytext changed!')
+            t.unwatch('mytext', tmp)
+        }
+        t.watch('mytext', tmp)
         
         // use `veppIns.data.xxx` to get or set your reactive variables
         // by the way, Vepp prepare polyfills for you. see more details below!
