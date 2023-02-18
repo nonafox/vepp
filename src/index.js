@@ -81,7 +81,7 @@ export default class Vepp {
         let v = this.deps[key]
         for (let k2 in v) {
             let v2 = v[k2]
-            v2()
+            v2.call(this)
         }
     }
     watch(key, callback) {
