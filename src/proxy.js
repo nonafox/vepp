@@ -19,8 +19,9 @@ export function createProxy(obj, notifier, _this, key = null) {
     
     const proxy = new Proxy(obj, {
         get(t, k) {
-            if (reactiveContext)
-                reactiveDeps.push(key || k)
+            let ck = key || k
+            if (ck && reactiveContext && reactiveDeps.indexOf(ck) < 0)
+                reactiveDeps.push(ck)
             if (typeof t[k] == 'function')
                 return (...args) => t[k].call(proxy, ...args)
             else
