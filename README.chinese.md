@@ -53,7 +53,7 @@ Page({
         t.watch('mytext', tmp)
         
         // 用 veppIns.data.xxx 的形式对动态变量进行取值或赋值
-        // 另外，Vepp为你准备了多样的polyfills，这意味着你可以自由地使用 setInterval() 等等！请参见下文获取详细信息
+        // 另外，Vepp为你准备了多样的polyfills，这意味着你可以自由地使用 setInterval(...) 等等！请参见下文获取详细信息
         setInterval(function () {
             t.mytext = 'Random: ' + (Math.random() * 100).toFixed()
         }, 1000)
