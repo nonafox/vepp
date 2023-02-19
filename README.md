@@ -30,6 +30,7 @@ Page({
             // use VML (Vepp Markup Language) to create widgets and set their properties or events declaratively:
             // #TAG    propName: expression, '@eventName': expression, ...
             // in fact, the part after `#TAG` is just like JSON!
+            // NOTICE! VML's propertiy keys are handled in order, notice this when you get something wrong with distrust!
             ui: `
                 #TEXT    h: DEVICE_HEIGHT * 0.5, text: mytext, '@click_up': myfunc
             `,

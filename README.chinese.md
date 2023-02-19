@@ -30,6 +30,7 @@ Page({
             // 使用 VML (Vepp Markup Language) 创建控件、声明式定义properties和events，形式如下：
             // #TAG    propName: expression, '@eventName': expression, ...
             // 不知你是否发现，#TAG 之后的部分跟很像JSON！
+            // 特别提示！！ VML 中各键的处理是按顺序的，当你不注意时这可能导致一些莫名其妙的错误，请特别小心！
             ui: `
                 #TEXT    h: DEVICE_HEIGHT * 0.5, text: mytext, '@click_up': myfunc
             `,

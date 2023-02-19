@@ -21,14 +21,14 @@ export default class Vepp {
             let { 1: tag, 2: attrs } = matched, t = this
             
             let attrsParser0 = new Function(`
-                with (this.data) {
+                with (this) {
                     return { ${attrs} }
                 }
             `)
             let attrsParser = function () {
                 let res, deps
                 deps = createReactiveContext(function () {
-                    res = attrsParser0.call(this)
+                    res = attrsParser0.call(this.data)
                 }, t)
                 return { res: res, deps: deps }
             }
@@ -56,7 +56,14 @@ export default class Vepp {
             }
             attrsPusher(nattrs)
 
+            let updating = false, stackCount = 0
             let updater = () => {
+                if (updating) {
+                    stackCount ++
+                    return
+                }
+                updating = true
+
                 let { res: nattrs, deps: ndeps } = attrsParser()
                 attrsPusher(nattrs)
                 for (let k in ndeps) {
@@ -67,6 +74,12 @@ export default class Vepp {
                         this.deps[v].push(updater)
                         deps.push(v)
                     }
+                }
+
+                updating = false
+                if (stackCount) {
+                    stackCount --
+                    updater()
                 }
             }
             for (let k in deps) {
