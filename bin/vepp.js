@@ -11,7 +11,7 @@ let packageJson = JSON.parse(
 
 program
     .version(packageJson.version)
-    .command('init', 'initialize a Vepp project.')
+    .command('init', 'initialize a new Vepp project.')
     .command('compile', 'compile the current Vepp project.')
     .command('auto', 'enable automatically compiling on current Vepp project.')
     .parse(process.argv)

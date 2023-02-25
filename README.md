@@ -12,7 +12,7 @@ You have to know, in ZeppOS, there are so many hard-to-solve limits:
 - Rubbish widget system
 - Rubbish running efficiency
 
-But maybe you don't believe, Vepp solves them:
+But maybe you don't believe, Vepp solves all of them:
 
 - Skip `new Function()`'s limit by a special way
 - Build a pefect widget system in your favourite way
@@ -41,7 +41,7 @@ Let's see what ZeppOS apps made by Vepp is like:
     }
 	
     let watcher = () => {
-        console.log(`variable 'txt' first changed.`)
+        console.log(`variable 'txt' was first changed.`)
     	// use `$vepp.unwatch(key, func)` to cancel watching
         $vepp.unwatch('txt', watcher)
     }
@@ -56,7 +56,7 @@ But wait a moment! This syntax which seems like HTML can not be compiled by Zepp
 
 ```bash
 # Vepp merges its core part and its CLI in a package.
-# WARNNING: it is invalid to import global packages in ZeppOS's project, so you MUST do like this:
+# WARNING: it is invalid to import global packages in ZeppOS's project, so you MUST do like this:
 npm install vepp
 npm install vepp -g
 ```
@@ -72,7 +72,7 @@ vepp compile
 It's done! What's more, you can do this and use the watcher mode to compile automatically when changing:
 
 ```bash
-# WARNNING: this mode can not work as usual while other file watchers are working (like ZeppCLI)
+# WARNING: this mode can not work as usual while other file watchers are working (like ZeppCLI)
 vepp auto
 ```
 

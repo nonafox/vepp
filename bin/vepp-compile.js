@@ -29,11 +29,11 @@ let walk = (dir, handler) => {
     }
 }
 let err = (msg) => {
-    console.log(chalk.red(msg))
+    console.log(chalk.red('* Error when compiling: ' + msg))
     process.exit(1)
 }
 let warn = (msg) => {
-    console.log(chalk.yellow(msg))
+    console.log(chalk.yellow('* Warning when compiling: ' + msg))
     process.exit(1)
 }
 let compileUI = (fpath, html, ui) => {
@@ -87,7 +87,7 @@ let compile = (fpath) => {
             html.splice(k, 1)
         }
     }
-    let ids = Util.scriptReg(c_my, /\b\$\s*\.\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g)
+    let ids = Util.scriptReg(c_my, /\$\s*\.\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g)
     for (let i = 0; i < ids.length; i ++) {
         let v = ids[i][1]
         data[v] = null
@@ -95,15 +95,17 @@ let compile = (fpath) => {
     compileUI(fpath, html, ui)
     
     c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: ${JSON.stringify(data)} }, true); `
-    c_gen += `void (function ($) { ${c_my} })($vepp.data); `
+    c_gen += `(function ($) { ${c_my} })($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
     let res = `import Vepp from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
     fs.writeFileSync(aname, res)
 }
-walk(rpath + 'page/', compile)
-walk(rpath + 'watchface/', compile)
+if (fs.existsSync(rpath + 'page/'))
+    walk(rpath + 'page/', compile)
+if (fs.existsSync(rpath + 'watchface/'))
+    walk(rpath + 'watchface/', compile)
 
 spinner.stop()
-console.log(chalk.green('* compile complete!'))
+console.log(chalk.green('* compilation complete!'))
 console.timeEnd('* time')

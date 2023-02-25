@@ -12,5 +12,6 @@ export default {
                 fs.unlinkSync(v)
             }
         }
+        fs.rmdirSync(path)
     }
 }
