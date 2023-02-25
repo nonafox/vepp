@@ -1,7 +1,7 @@
 import './polyfill.js'
 
 import { createProxy, createReactiveContext } from './proxy.js'
-import { defaultConfig } from './config.js'
+import { needFuckWidgets, defaultConfig } from './config.js'
 
 export default class Vepp {
     constructor(opts, builtin = false) {
@@ -25,12 +25,24 @@ export default class Vepp {
             for (let n in json) {
                 const comp = json[n]
                 const tag = comp.$tag.toUpperCase()
-
+                const needToFuck = needFuckWidgets.indexOf(tag) >= 0
+                
+                const defaultProps = Object.assign(
+                    {}, defaultConfig[tag] || defaultConfig[null]
+                )
                 const widget = ctor.createWidget(
                     hmUI.widget[tag],
-                    defaultConfig[tag] || defaultConfig[null]
+                    defaultProps
                 )
-                const eventsBuf = {}, depsBuf = new Set()
+                const eventsBuf = {}, depsBuf = new Set(),
+                    xpropsBuf = needToFuck
+                        ? {
+                            x: defaultProps.x,
+                            y: defaultProps.y,
+                            w: defaultProps.w,
+                            h: defaultProps.h
+                        }
+                        : null
                 
                 for (let k in comp) {
                     let v = comp[k], cv
@@ -66,10 +78,22 @@ export default class Vepp {
                             rk2 = k.toLowerCase()
                         const propUpdater = () => {
                             const deps = update()
-                            if (typeof rk == 'number')
+                            if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
-                            else
-                                widget.setProperty(hmUI.prop.MORE, { [rk2]: v })
+                                if (needToFuck
+                                        && (rk2 == 'x' || rk2 == 'y' || rk2 == 'w' || rk2 == 'h'))
+                                    xpropsBuf[rk2] = cv
+                            }
+                            else if (needToFuck) {
+                                xpropsBuf[rk2] = cv
+                                widget.setProperty(hmUI.prop.MORE, xpropsBuf)
+                                delete xpropsBuf[rk2]
+                            }
+                            else {
+                                widget.setProperty(hmUI.prop.MORE, {
+                                    [rk2]: cv
+                                })
+                            }
                             for (let depKey of deps) {
                                 if (! depsBuf.has(depKey)) {
                                     t.dep(depKey, propUpdater)
