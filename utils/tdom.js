@@ -2,7 +2,7 @@ import Util from './general.js'
 
 export default class TDom {
     isValidName(text) {
-        return /^[a-zA-Z0-9\-_\$\@\:]+$/.test(text)
+        return /^[a-zA-Z\-_\@\:][a-zA-Z0-9\-_\@\:]*$/.test(text)
     }
     isQuote(v) {
         return v == `'` || v == `"`

@@ -11,14 +11,14 @@ export default class Vepp {
         this.ui = opts.ui || []
         this.data = createProxy(opts.data || {}, this.update, this)
         this.deps = {}
-        this.parse(this.ui)
+        this.parse(hmUI, this.ui)
     }
     dep(key, func) {
         if (! (key in this.deps))
             this.deps[key] = new Set()
         this.deps[key].add(func)
     }
-    parse(json) {
+    parse(ctor, json) {
         try {
             const t = this
 
@@ -26,20 +26,22 @@ export default class Vepp {
                 const comp = json[n]
                 const tag = comp.$tag.toUpperCase()
 
-                const widget = hmUI.createWidget(
+                const widget = ctor.createWidget(
                     hmUI.widget[tag],
                     defaultConfig[tag] || defaultConfig[null]
                 )
                 const eventsBuf = {}, depsBuf = new Set()
                 
                 for (let k in comp) {
-                    let v
-                    const handledFunc = new Function(
-                        `with(this){return(${comp[k]})}`
-                    )
+                    let v = comp[k], cv
+                    const handledFunc = typeof v == 'string'
+                        ? new Function(
+                            `with(this){return(${v})}`
+                        )
+                        : null
                     const update = () => {
                         return createReactiveContext(function () {
-                            v = handledFunc.call(this.data)
+                            cv = handledFunc.call(this.data)
                         }, t)
                     }
 
@@ -48,18 +50,22 @@ export default class Vepp {
                         update()
                         if (rk in eventsBuf)
                             widget.removeEventListener(rk, eventsBuf[rk])
-                        widget.addEventListener(rk, v)
-                        eventsBuf[rk] = v
+                        widget.addEventListener(rk, cv)
+                        eventsBuf[rk] = cv
                     }
                     else if (k.startsWith('$')) {
                         let rk = k.substring(1)
-                        if (rk != 'tag') {}
+                        if (rk == 'children') {
+                            if (widget.createWidget) {
+                                this.parse(widget, v)
+                            }
+                        }
                     }
                     else {
                         let rk = hmUI.prop[k.toUpperCase()]
                         const propUpdater = () => {
                             const deps = update()
-                            widget.setProperty(rk, v)
+                            widget.setProperty(rk, cv)
                             for (let depKey of deps) {
                                 if (! depsBuf.has(depKey)) {
                                     t.dep(depKey, propUpdater)

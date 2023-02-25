@@ -14,6 +14,7 @@ export const defaultConfig = {
         w: DEVICE_WIDTH,
         h: DEVICE_HEIGHT,
         align_h: hmUI.align.CENTER_H,
-        align_v: hmUI.align.CENTER_V
+        align_v: hmUI.align.CENTER_V,
+        color: 0xffffff
     }
 }

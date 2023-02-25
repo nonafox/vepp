@@ -29,14 +29,15 @@ Let's see what ZeppOS apps made by Vepp is like:
 
 <!-- each element stands for a widget in ZeppOS -->
 <!-- as those in Vue etc., use `:name="expression"` to set a reactive property, `name="text"` to set a static stringify property, and `@name="statements"` to set an event -->
-<text :text="txt + '~'" @click_up="test()"></text>
+<text :text="txt + '~'" @click_up="/* get event argument by built-in variable `$arg` */ test($arg)"></text>
 
 <!-- special element `script` which allows you to write your own JS -->
 <script>
     // `$vepp` references to your Vepp instance
     // `$`     the short form of $vepp.data, i.e. your reactive variables
     $.txt = 'hello, world'
-    $.test = function () {
+    $.test = function (arg) {
+        console.log('event argument: ' + JSON.stringify(arg))
         $.txt += '!'
     }
 	

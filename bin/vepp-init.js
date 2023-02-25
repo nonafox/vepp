@@ -28,7 +28,6 @@ let choose = await inquirer.prompt([{
     ]
 }])
 choose = choose.type
-console.log(choose)
 
 let rpath = path.resolve(projectName)
 

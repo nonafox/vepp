@@ -29,14 +29,15 @@
 
 <!-- 每个元素都代表对应的 ZeppOS 控件 -->
 <!-- 如 Vue 等框架中的语法：用 :name="expression" 来设置响应性属性，用 name="text" 来设置静态字符串属性，用 @name="statements" 来注册事件。 -->
-<text :text="txt + '~'" @click_up="test()"></text>
+<text :text="txt + '~'" @click_up="/* 通过内置变量 $arg 获取事件的 argument */ test($arg)"></text>
 
 <!-- 你需要在特殊元素 script 中编写你的 JS 代码 -->
 <script>
     // $vepp 指向 Vepp 实例
     // $     指向 $vepp.data ，即你所有的响应性变量
     $.txt = 'hello, world'
-    $.test = function () {
+    $.test = function (arg) {
+        console.log('event argument: ' + JSON.stringify(arg))
         $.txt += '!'
     }
 	
