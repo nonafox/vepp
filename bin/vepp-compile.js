@@ -87,18 +87,18 @@ let compile = (fpath) => {
             html.splice(k, 1)
         }
     }
-    let ids = Util.scriptReg(c_my, /\bthis\.([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g)
+    let ids = Util.scriptReg(c_my, /\b\$\s*\.\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g)
     for (let i = 0; i < ids.length; i ++) {
         let v = ids[i][1]
         data[v] = null
     }
     compileUI(fpath, html, ui)
     
-    c_gen += `$veppIns = new Vepp({ ui: ${JSON.stringify(ui)}, data: ${JSON.stringify(data)} }, true); `
-    c_gen += `void (function () { ${c_my} }).call($veppIns.data); `
+    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: ${JSON.stringify(data)} }, true); `
+    c_gen += `void (function ($) { ${c_my} })($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
-    let res = `import Vepp from 'vepp'; var $veppIns; Page({ build() { ${c_gen} }, onDestroy() { $veppIns = null; } });`
+    let res = `import Vepp from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
     fs.writeFileSync(aname, res)
 }
 walk(rpath + 'page/', compile)

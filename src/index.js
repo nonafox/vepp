@@ -78,6 +78,8 @@ export default class Vepp {
     }
     update(key) {
         try {
+            if (! (key in this.deps))
+                this.deps[key] = new Set()
             let v = this.deps[key]
             for (let depItem of v) {
                 depItem.call(this)
