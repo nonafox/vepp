@@ -2,11 +2,11 @@
 import path from 'path'
 import program from 'commander'
 import chalk from 'chalk'
-import fs, { writeFileSync } from 'fs'
+import fs from 'fs'
 import ora from 'ora'
 
 import Util from '../utils/general.js'
-import TDom from '../src/tdom.js'
+import TDom from '../utils/tdom.js'
 let tdom = new TDom()
 
 program.parse(process.argv)
@@ -75,7 +75,7 @@ let compile = (fpath) => {
     let rfname = path.basename(fpath)
     let fname = rfname.substring(0, rfname.length - path.extname(fpath).length)
     let c_my = '', c_gen = ''
-    let html, ui = []
+    let html, ui = [], data = {}
     try { html = tdom.read(src).children } catch {}
     if (! html)
         err('invalid .vepp file: ' + fpath)
@@ -87,9 +87,14 @@ let compile = (fpath) => {
             html.splice(k, 1)
         }
     }
+    let ids = Util.scriptReg(c_my, /\bthis\.([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g)
+    for (let i = 0; i < ids.length; i ++) {
+        let v = ids[i][1]
+        data[v] = null
+    }
     compileUI(fpath, html, ui)
     
-    c_gen += `$veppIns = new Vepp({ ui: ${JSON.stringify(ui)} }); `
+    c_gen += `$veppIns = new Vepp({ ui: ${JSON.stringify(ui)}, data: ${JSON.stringify(data)} }, true); `
     c_gen += `void (function () { ${c_my} }).call($veppIns.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'

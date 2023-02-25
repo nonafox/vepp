@@ -21,7 +21,7 @@ But maybe you don't believe, Vepp solves them:
 Now, start learning and enjoy!
 
 # Quick start
-To be composed...
+To be written...
 
 # Polyfills
 Vepp prepare varied polyfills for you, includes:

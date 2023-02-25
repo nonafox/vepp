@@ -1,4 +1,4 @@
-import Util from '../utils/general.js'
+import Util from './general.js'
 
 export default class TDom {
     isValidName(text) {
@@ -134,7 +134,7 @@ export default class TDom {
                         }
                     }
                     else if ((tagStatus || isEndTag) && v == '>') {
-                        if (! isEndTag && Util.realLength(currentAttrs))
+                        if (! isEndTag && Object.keys(currentAttrs).length)
                             currentVNode.attrs = currentAttrs
                         
                         tagStatus = false
