@@ -61,11 +61,14 @@ let compileUI = (fpath, html, ui) => {
                 props[k2] = `\`${v2}\``
             }
         }
+        let children = []
+        compileUI(fpath, v.children, children)
 
         ui.push(Object.assign(
             props,
             {
-                $tag: v.tag
+                $tag: v.tag,
+                $children: children
             }
         ))
     }
@@ -88,9 +91,8 @@ let compile = (fpath) => {
         }
     }
     let ids = Util.scriptReg(c_my, /\$\s*\.\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g)
-    for (let i = 0; i < ids.length; i ++) {
-        let v = ids[i][1]
-        data[v] = null
+    for (let v of ids) {
+        data[v[1]] = null
     }
     compileUI(fpath, html, ui)
     

@@ -62,10 +62,14 @@ export default class Vepp {
                         }
                     }
                     else {
-                        let rk = hmUI.prop[k.toUpperCase()]
+                        let rk = hmUI.prop[k.toUpperCase()],
+                            rk2 = k.toLowerCase()
                         const propUpdater = () => {
                             const deps = update()
-                            widget.setProperty(rk, cv)
+                            if (typeof rk == 'number')
+                                widget.setProperty(rk, cv)
+                            else
+                                widget.setProperty(hmUI.prop.MORE, { [rk2]: v })
                             for (let depKey of deps) {
                                 if (! depsBuf.has(depKey)) {
                                     t.dep(depKey, propUpdater)
