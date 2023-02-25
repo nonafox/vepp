@@ -1,9 +1,15 @@
 {
   "name": "vepp",
   "type": "module",
-  "version": "0.7.1",
-  "description": "A light JavaScript framework for ZeppOS.",
+  "version": "0.8.0",
+  "description": "A light JavaScript framework with CLI for ZeppOS.",
   "main": "src/index.js",
+  "bin": {
+    "vepp": "bin/vepp.js",
+    "vepp-init": "bin/vepp-init.js",
+    "vepp-complile": "bin/vepp-complile.js",
+    "vepp-auto": "bin/vepp-auto.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +20,15 @@
   ],
   "author": "jwhgzs",
   "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "commander": "^2.11.0",
+    "download-git-repo": "^1.0.1",
+    "inquirer": "^4.0.0",
+    "node-watch": "^0.7.3",
+    "ora": "^1.3.0",
+    "rimraf": "^2.6.2"
+  },
   "devDependencies": {
     "@zeppos/device-types": "^1.0.0"
   },

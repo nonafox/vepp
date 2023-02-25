@@ -1,5 +1,5 @@
-import './polyfill/device-polyfill.js'
-import { getGlobal } from './polyfill/global.js'
+import './polyfills/device-polyfill.js'
+import { getGlobal } from './polyfills/global.js'
 
 const global = getGlobal()
 

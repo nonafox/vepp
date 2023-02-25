@@ -1,9 +1,9 @@
-import { isPlainObject } from './util.js'
+import Util from '../utils/general.js'
 
-let reactiveContext = null, reactiveDeps = []
+let reactiveContext = null, reactiveDeps = new Set()
 export function createReactiveContext(func, _this) {
     reactiveContext = () => func.call(_this)
-    reactiveDeps = []
+    reactiveDeps = new Set()
     reactiveContext()
     reactiveContext = null
     return reactiveDeps
@@ -12,25 +12,24 @@ export function createReactiveContext(func, _this) {
 export function createProxy(obj, notifier, _this, key = null) {
     for (let k in obj) {
         let v = obj[k]
-        if (isPlainObject(v)) {
+        if (Util.isPlainObject(v)) {
             obj[k] = createProxy(v, notifier, _this, key || k)
         }
     }
     
     const proxy = new Proxy(obj, {
         get(t, k) {
-            let ck = key || k
-            if (ck && reactiveContext && reactiveDeps.indexOf(ck) < 0)
-                reactiveDeps.push(ck)
-            if (typeof t[k] == 'function')
-                return (...args) => t[k].call(proxy, ...args)
-            else
-                return t[k]
+            let rk = key || k
+            if (reactiveContext && typeof rk == 'string')
+                reactiveDeps.add(rk)
+            return t[k]
         },
         set(t, k, v) {
             if (t[k] !== v) {
-                if (isPlainObject(v))
+                if (Util.isPlainObject(v))
                     t[k] = createProxy(v, notifier, _this, key || k)
+                else if (typeof v == 'function')
+                    t[k] = (...args) => t[k].call(proxy, ...args)
                 else
                     t[k] = v
                 notifier.call(_this, key || k)
@@ -42,7 +41,7 @@ export function createProxy(obj, notifier, _this, key = null) {
             notifier.call(_this, key || k)
             return true
         },
-        getOwnPropertyDescriptor(t, k) {
+        getOwnPropertyDescriptor() {
             return {
                 enumerable: true,
                 configurable: true

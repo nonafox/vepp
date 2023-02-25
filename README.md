@@ -21,45 +21,7 @@ But maybe you don't believe, Vepp solves them:
 Now, start learning and enjoy!
 
 # Quick start
-```javascript
-import Vepp from 'vepp'
-
-Page({
-    build() {
-        let { data: t } = new Vepp({
-            // use VML (Vepp Markup Language) to create widgets and set their properties or events declaratively:
-            // #TAG    propName: expression, '@eventName': expression, ...
-            // in fact, the part after `#TAG` is just like JSON!
-            // NOTICE! VML's propertiy keys are handled in order, notice this when you get something wrong with distrust!
-            ui: `
-                #TEXT    h: DEVICE_HEIGHT * 0.5, text: mytext, '@click_up': myfunc
-            `,
-            data: {
-                DEVICE_WIDTH: hmSetting.getDeviceInfo().width,
-                DEVICE_HEIGHT: hmSetting.getDeviceInfo().height,
-                mytext: 'hello, world',
-                myfunc() {
-                    console.log(this.mytext)
-                }
-            }
-        })
-
-        // use `veppIns.watch(...)` to watch your variables
-        // and `veppIns.unwatch(...)` to unwatch them
-        let tmp = () => {
-            console.log('mytext changed!')
-            t.unwatch('mytext', tmp)
-        }
-        t.watch('mytext', tmp)
-        
-        // use `veppIns.data.xxx` to get or set your reactive variables
-        // by the way, Vepp prepare polyfills for you. see more details below!
-        setInterval(function () {
-            t.mytext = 'Random: ' + (Math.random() * 100).toFixed()
-        }, 1000)
-    }
-})
-```
+To be composed...
 
 # Polyfills
 Vepp prepare varied polyfills for you, includes:
