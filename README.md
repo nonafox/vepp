@@ -72,11 +72,9 @@ vepp compile
 It's done! What's more, you can do this and use the watcher mode to compile automatically when changing:
 
 ```bash
-# WARNING: this mode can not work as usual while other file watchers are working (like ZeppCLI)
+# WARNING: although this mode is cool, it can not work as usual while other file watchers are working (like ZeppCLI)
 vepp auto
 ```
-
-For advanced, you can install Vepp's VSCode extension from extension store to enjoy more!
 
 # Polyfills
 

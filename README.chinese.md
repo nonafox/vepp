@@ -76,8 +76,6 @@ OK 啦！你也可以使用观察者模式， Vepp 会监听文件更改并自�
 vepp auto
 ```
 
-对于进阶者，你可以安装 Vepp 的 VSCode 扩展，体验更多开发乐趣！
-
 # Polyfills
 Vepp 为你准备了多样的polyfills，具体如下：
 
