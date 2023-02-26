@@ -2,7 +2,7 @@ export const DEVICE_WIDTH = hmSetting.getDeviceInfo().width
 export const DEVICE_HEIGHT = hmSetting.getDeviceInfo().height
 
 export const needFuckWidgets = [
-    'BUTTON', 'FILL_RECT'
+    'BUTTON', 'FILL_RECT', 'RADIO_GROUP'
 ]
 export const defaultConfig = {
     null: {
@@ -19,5 +19,11 @@ export const defaultConfig = {
         align_h: hmUI.align.CENTER_H,
         align_v: hmUI.align.CENTER_V,
         color: 0xffffff
+    },
+    BUTTON: {
+        x: 0,
+        y: 0,
+        w: 100,
+        h: 40
     }
 }

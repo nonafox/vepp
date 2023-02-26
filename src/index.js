@@ -34,6 +34,8 @@ export default class Vepp {
                     hmUI.widget[tag],
                     defaultProps
                 )
+                if (! widget)
+                    break
                 const eventsBuf = {}, depsBuf = new Set(),
                     xpropsBuf = needToFuck
                         ? {
@@ -43,32 +45,42 @@ export default class Vepp {
                             h: defaultProps.h
                         }
                         : null
+                let initEvent = null
                 
                 for (let k in comp) {
                     let v = comp[k], cv
                     const handledFunc = typeof v == 'string'
                         ? new Function(
-                            `with(this){return(${v})}`
+                            '$widget',
+                            `let $=this;with(this){return(${v})}`
                         )
                         : null
-                    const update = () => {
-                        return createReactiveContext(function () {
-                            cv = handledFunc.call(this.data)
-                        }, t)
-                    }
+                    const update = typeof v == 'string'
+                        ? () => {
+                            return createReactiveContext(function () {
+                                cv = handledFunc.call(this.data, widget)
+                            }, t)
+                        }
+                        : null
 
                     if (k.startsWith('@')) {
-                        let rk = hmUI.event[k.substring(1).toUpperCase()]
+                        let rk2 = k.substring(1),
+                            rk = hmUI.event[rk2.toUpperCase()]
                         update()
-                        if (rk in eventsBuf)
-                            widget.removeEventListener(rk, eventsBuf[rk])
-                        widget.addEventListener(rk, cv)
-                        eventsBuf[rk] = cv
+                        if (rk2 == '@init') {
+                            initEvent = cv
+                        }
+                        else {
+                            if (rk in eventsBuf)
+                                widget.removeEventListener(rk, eventsBuf[rk])
+                            widget.addEventListener(rk, cv)
+                            eventsBuf[rk] = cv
+                        }
                     }
                     else if (k.startsWith('$')) {
                         let rk = k.substring(1)
                         if (rk == 'children') {
-                            if (widget.createWidget) {
+                            if (v.length && widget.createWidget) {
                                 this.parse(widget, v)
                             }
                         }
@@ -104,6 +116,9 @@ export default class Vepp {
                         propUpdater()
                     }
                 }
+                
+                if (typeof initEvent == 'function')
+                    initEvent(widget)
             }
         }
         catch (ex) {

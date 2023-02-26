@@ -64,21 +64,32 @@ let compileUI = (fpath, html, ui) => {
         let children = []
         compileUI(fpath, v.children, children)
 
-        ui.push(Object.assign(
+        let d = Object.assign(
             props,
             {
                 $tag: v.tag,
                 $children: children
             }
-        ))
+        )
+        for (let k2 in d) {
+            let v2 = d[k2]
+            if (k2.toLowerCase() == 'init') {
+                delete d.init
+                d.init = v2
+                break
+            }
+        }
+        ui.push(d)
     }
 }
 let compile = (fpath) => {
     let src = fs.readFileSync(fpath, 'utf-8')
     let rfname = path.basename(fpath)
     let fname = rfname.substring(0, rfname.length - path.extname(fpath).length)
-    let c_my = '', c_gen = ''
-    let html, ui = [], data = {}
+    let c_my = '', c_mypre = '', c_gen = ''
+    let html, ui = [], data = {
+        $w: 0, $h: 0
+    }
     try { html = tdom.read(src).children } catch {}
     if (! html)
         err('invalid .vepp file: ' + fpath)
@@ -86,7 +97,10 @@ let compile = (fpath) => {
     for (let k in html) {
         let v = html[k]
         if (v.tag == 'script' && 0 in v.children) {
-            c_my += v.children[0].text
+            if ('pre' in v.attrs)
+                c_mypre += v.children[0].text
+            else
+                c_my += v.children[0].text
             html.splice(k, 1)
         }
     }
@@ -96,11 +110,13 @@ let compile = (fpath) => {
     }
     compileUI(fpath, html, ui)
     
-    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: ${JSON.stringify(data)} }, true); `
-    c_gen += `(function ($) { ${c_my} })($vepp.data); `
+    c_gen += 'let $ = {}; '
+    c_gen += c_mypre + '; '
+    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: Object.assign($, ${JSON.stringify(data)}) }, true); `
+    c_gen += `(function ($) { $.$w = $w; $.$h = $h; ${c_my} }).call($vepp.data, $vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
-    let res = `import Vepp from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
+    let res = `var { width: $w, height: $h } = hmSetting.getDeviceInfo(); import Vepp from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
     fs.writeFileSync(aname, res)
 }
 if (fs.existsSync(rpath + 'page/'))
