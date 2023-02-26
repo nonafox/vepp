@@ -34,50 +34,79 @@ let err = (msg) => {
 }
 let warn = (msg) => {
     console.log(chalk.yellow('* Warning when compiling: ' + msg))
-    process.exit(1)
 }
-let compileUI = (fpath, html, ui) => {
+let compileUI = (fpath, html, ui, data, pid = 'ROOT') => {
     for (let k in html) {
         let v = html[k]
-        if (v.tag == 'script') {
-            warn(`ignored invalid 'script' element: ` + fpath)
+        let tag = v.tag ? v.tag.replace('-', '_') : null
+        if (tag == 'script') {
+            err(`invalid 'script' element: ` + fpath)
             continue
         }
-        else if (! v.tag) continue
+        else if (! tag) continue
 
+        let id = Util.tmpPrefix + Util.randomText()
         let props = Util.deepCopy(v.attrs)
         for (let k2 in props) {
-            let v2 = props[k2]
+            let v2 = props[k2], ok2 = k2
+            k2 = k2.replace('-', '_')
             if (k2.startsWith(':')) {
-                delete props[k2]
+                delete props[ok2]
                 k2 = k2.substring(1)
-                props[k2] = v2
+                if (k2 == ':value') {
+                    if (tag == 'radio_group') {
+                        let tmpid = id + '_radios'
+                        if (! (tmpid in data))
+                            data[tmpid] = {}
+                        props.init = props.checked = `${tmpid}[${v2}]`
+                        let oldcode = props['check_func']
+                            ? `(${props['check_func']})(...$args)`
+                            : ''
+                        props['check_func'] = `(...$args)=>{if($args[2]){${v2}=Object.keys(${tmpid})[$args[1]]};${oldcode}}`
+                    }
+                    else if (tag == 'state_button') {
+                        let tmpid = pid + '_radios'
+                        if (! (tmpid in data))
+                            err(`invalid ':value' property: ` + fpath)
+                        if (! ('@@init' in props))
+                            props['@@init'] = ''
+                        props['@@init'] = `${tmpid}[${v2}]=$widget;` + props['@@init']
+                    }
+                    else {
+                        err(`invalid ':value' property: ` + fpath)
+                    }
+                }
+                else {
+                    props[k2] = v2
+                }
             }
-            else if (k2.startsWith('@')) {
-                props[k2] = `($arg)=>{${v2}}`
-            }
-            else {
+            else if (! k2.startsWith('@')) {
+                delete props[ok2]
                 v2 = v2.replace('`', '\\`')
                 props[k2] = `\`${v2}\``
             }
         }
+        for (let k2 in props) {
+            let v2 = props[k2]
+            if (k2.startsWith('@')) {
+                delete props[k2]
+                props[k2] = `($arg)=>{${v2}}`
+            }
+        }
         let children = []
-        compileUI(fpath, v.children, children)
+        compileUI(fpath, v.children, children, data, id)
 
         let d = Object.assign(
             props,
             {
-                $tag: v.tag,
+                $tag: tag,
                 $children: children
             }
         )
-        for (let k2 in d) {
-            let v2 = d[k2]
-            if (k2.toLowerCase() == 'init') {
-                delete d.init
-                d.init = v2
-                break
-            }
+        if ('init' in d) {
+            let v2 = d.init
+            delete d.init
+            d.init = v2
         }
         ui.push(d)
     }
@@ -108,10 +137,10 @@ let compile = (fpath) => {
     for (let v of ids) {
         data[v[1]] = null
     }
-    compileUI(fpath, html, ui)
+    compileUI(fpath, html, ui, data)
     
-    c_gen += `let $pre_data = {}; (function () { ${c_mypre} }).call($pre_data); `
-    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: Object.assign(${JSON.stringify(data)}, $pre_data) }, true); $pre_data = null; `
+    c_gen += `let $pre_data = ${JSON.stringify(data)}; (function () { ${c_mypre} }).call($pre_data); `
+    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: $pre_data }, true); $pre_data = null; `
     c_gen += `(function () { this.$w = $w; this.$h = $h; ${c_my}; }).call($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'

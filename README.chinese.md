@@ -103,8 +103,38 @@ OK 啦！你也可以使用观察者模式， Vepp 会监听文件更改并自�
 vepp auto
 ```
 
+# 进阶功能
+
+### 双向绑定
+
+尽管 Vepp 的设计大体上遵循原生 ZeppOS 的接口，力求使原生 API 的特征都能在 Vepp 中映射。但是对于有些很令人难受的控件 API（比如表单、列表等），我们还是自己动手、丰衣足食吧！
+
+让我们先来看个表单的小例子：
+
+```html
+<!-- 通过特殊 property `:value` 来实现表单的双向绑定 -->
+<!-- 注意！目前只适配了 RADIO_GROUP 的双向绑定功能，更多精彩敬请期待！ -->
+
+<radio-group
+        :h="64"
+        select-src="select.png",
+        unselect-src="unselect.png"
+        ::value="checked">
+    <state-button :x="40" :y="200" :w="64" :h="64" ::value="'A'"></state-button>
+    <state-button :x="190" :y="200" :w="64" :h="64" ::value="'B'"></state-button>
+    <state-button :x="340" :y="200" :w="64" :h="64" ::value="'C'"></state-button>
+</radio-group>
+<text :y="100" :h="100" :text="'checked: ' + checked"></text>
+
+<script pre>
+    this.checked = 'C';
+</script>
+```
+
+够简单了吧？除了设置名为 `:value` 的 property ，你无需写任何逻辑代码即可实现表单的数据流。我认为没有必要介绍更多详细内容了！
+
 # Polyfills
-Vepp 为你准备了多样的polyfills，具体如下：
+Vepp 为你准备了多样、实用的 polyfills ，这里给出它们的列表：
 
 - class `Buffer`
 - class `Function`

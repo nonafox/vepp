@@ -83,19 +83,19 @@ export default class TDom {
                             }
                         }
                         if (! isEndTag && v == '>' && quoteAvailable) {
-                            currentAttrs[currentAttrsRaw] = quoteText || ''
+                            currentAttrs[currentAttrsRaw.toLowerCase()] = quoteText || ''
                             quoteText = currentAttrsRaw = ''
                             quoteAvailable = false
                         }
                         if (! isEndTag && (this.isVoidChar(v) || v == '>')
                                 && quoteAvailable) {
-                            currentAttrs[currentAttrsRaw] = quoteText || ''
+                            currentAttrs[currentAttrsRaw.toLowerCase()] = quoteText || ''
                             quoteText = currentAttrsRaw = ''
                             quoteAvailable = false
                         }
                         else if (! isEndTag && (this.isVoidChar(v) || v == '>')
                                 && currentAttrsRaw) {
-                            currentAttrs[currentAttrsRaw] = ''
+                            currentAttrs[currentAttrsRaw.toLowerCase()] = ''
                             quoteText = currentAttrsRaw = ''
                             quoteAvailable = false
                         }

@@ -9,7 +9,17 @@ export default {
         text: null,
         children: []
     },
+    tmpPrefix: '$tmp__',
     
+    randomText(len = 6) {
+        let sets = 'abcdefghijklmnopqrstuvwxyz0123456789',
+            res = ''
+        for (let k = 0; k < len; k ++) {
+            let c = sets[Math.floor(Math.random() * sets.length)]
+            res += c
+        }
+        return res
+    },
     isPlainObject(obj) {
         return obj && (obj.constructor === Object || Array.isArray(obj))
     },

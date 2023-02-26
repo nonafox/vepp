@@ -19,17 +19,18 @@ export function createProxy(obj, notifier, _this, key = null) {
     
     const proxy = new Proxy(obj, {
         get(t, k) {
-            let rk = key || k
+            const rk = key || k
             if (reactiveContext && typeof rk == 'string')
                 reactiveDeps.add(rk)
-            return t[k]
+            const raw = t[k]
+            if (typeof raw == 'function')
+                return (...args) => raw.call(proxy, args)
+            return raw
         },
         set(t, k, v) {
             if (t[k] !== v) {
                 if (Util.isPlainObject(v))
                     t[k] = createProxy(v, notifier, _this, key || k)
-                else if (typeof v == 'function')
-                    t[k] = (...args) => v.call(proxy, ...args)
                 else
                     t[k] = v
                 notifier.call(_this, key || k)
@@ -41,14 +42,11 @@ export function createProxy(obj, notifier, _this, key = null) {
             notifier.call(_this, key || k)
             return true
         },
-        getOwnPropertyDescriptor() {
-            return {
-                enumerable: true,
-                configurable: true
-            }
+        getOwnPropertyDescriptor(t, k) {
+            return Object.getOwnPropertyDescriptor(t, k)
         },
         ownKeys(t) {
-            return Object.keys(t)
+            return Reflect.ownKeys(t)
         },
         has(t, k) {
             return k in t

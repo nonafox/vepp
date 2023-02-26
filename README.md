@@ -1,11 +1,14 @@
 # Vepp
+
 A light JavaScript framework for ZeppOS, be maked to solve the rubbish widget system in native ZeppOS.
 
 # Languagues
+
 - English (current)
 - [Chinese](https://github.com/jwhgzs/vepp/blob/master/README.chinese.md)
 
 # Before start
+
 You have to know, in ZeppOS, there are so many hard-to-solve limits:
 
 - `eval()` and `new Function()`'s limits
@@ -22,6 +25,7 @@ But maybe you don't believe, Vepp solves all of them:
 Now, start learning and enjoy!
 
 # Quick start
+
 Let's see what ZeppOS apps made by Vepp is like:
 
 ```html
@@ -78,7 +82,7 @@ Let's see what ZeppOS apps made by Vepp is like:
 </script>
 ```
 
-Are you surprised? Yes, that's the way to use it: everyone who has experienced front-end development knows how to use it now!
+Are you surprised? Yes, that's the way to work with her: everyone who has experienced front-end development knows how to use it now!
 
 But wait a moment! This syntax which seems like HTML can not be compiled by ZeppCLI directly. You may use Vepp's CLI and be with its help. Here is how to install Vepp and its CLI:
 
@@ -104,9 +108,39 @@ It's done! What's more, you can do this and use the watcher mode to compile auto
 vepp auto
 ```
 
+# Advanced Features
+
+### Two-way Bindings
+
+Although Vepp follows the native ZeppOS's APIs overall, for example, you can do anything in Vepp as you are in native ZeppOS, there are many troublesome and trivial things: e.g. forms, lists, etc. But Vepp has already considered!
+
+Let's see an easy example of form:
+
+```html
+<!-- you can make two-way bindings on forms by the special property `:value` -->
+<!-- NOTICE!! Only the widget `RADIO_GROUP` supports this feature now, wait for a while as I'm hard developing! -->
+
+<radio-group
+        :h="64"
+        select-src="select.png",
+        unselect-src="unselect.png"
+        ::value="checked">
+    <state-button :x="40" :y="200" :w="64" :h="64" ::value="'A'"></state-button>
+    <state-button :x="190" :y="200" :w="64" :h="64" ::value="'B'"></state-button>
+    <state-button :x="340" :y="200" :w="64" :h="64" ::value="'C'"></state-button>
+</radio-group>
+<text :y="100" :h="100" :text="'checked: ' + checked"></text>
+
+<script pre>
+    this.checked = 'C';
+</script>
+```
+
+Is it pretty enough? You needn't do anything but to set the special built-in property named `:value`, and then you achieve the data stream on forms! I think it's no need for me to introduce more in this example :)
+
 # Polyfills
 
-Vepp prepares varied polyfills for you, includes:
+Vepp prepares varied polyfills for you, here we have the list of them:
 
 - class `Buffer`
 - class `Function`
