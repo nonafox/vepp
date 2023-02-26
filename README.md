@@ -29,6 +29,10 @@ Let's see what ZeppOS apps made by Vepp is like:
 
 <!-- each common element stands for a widget in ZeppOS -->
 <text
+    :h="
+        // there are two built-in variables: `$w` and `$h`, they reference to device's width and height
+        $h * 0.5
+    "
     :text="
         /* use `:name='expression'` to set a reactive property */
         txt + '~'

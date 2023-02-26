@@ -29,6 +29,10 @@
 
 <!-- 每个普通 VML 元素代表一个 ZeppOS 原生控件 -->
 <text
+    :h="
+        // 我们有两个内置变量 $w 和 $h ，它们分别指向设备的宽、高
+        $h * 0.5
+    "
     :text="
         /* 用 :name='expression' 的形式定义响应性 property */
         txt + '~'
