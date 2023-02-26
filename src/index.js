@@ -51,7 +51,7 @@ export default class Vepp {
                     let v = comp[k], cv
                     const handledFunc = typeof v == 'string'
                         ? new Function(
-                            '$', '$vepp', '$widget',
+                            '$vepp', '$', '$widget',
                             `with($){return(${v})}`
                         )
                         : null
