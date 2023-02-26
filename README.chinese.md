@@ -25,28 +25,49 @@
 让我们先来看看用 Vepp 开发的 ZeppOS 程序长什么样吧：
 
 ```html
-<!-- 这就是传说中的、名为 VML (Vepp Markup Language) 的骚气语法！你可以创建后缀为 .vepp 的文件来使用它 -->
+<!-- 这里用的是一种骚气的语法—— VML (Vepp Markup Language)，用 .vepp 作后缀即可启用 VML ！ -->
 
-<!-- 每个元素都代表对应的 ZeppOS 控件 -->
-<!-- 如 Vue 等框架中的语法：用 :name="expression" 来设置响应性属性，用 name="text" 来设置静态字符串属性，用 @name="statements" 来注册事件。 -->
-<text :text="txt + '~'" @click_up="/* 通过内置变量 $arg 获取事件的 argument */ test($arg)"></text>
+<!-- 每个普通 VML 元素代表一个 ZeppOS 原生控件 -->
+<text
+    :text="
+        /* 用 :name='expression' 的形式定义响应性 property */
+        txt + '~'
+    "
+    @click_up="
+        /* 用 @name='statements' 的形式定义事件 */
+        // 通过内置变量 $arg 获取事件参数
+        test($arg);
+        // 通过内置变量 $widget 获取当前控件对象（ZeppOS 原生）
+        console.log('ID of the widget: ' + $widget.getId());
+    "
+    @@init="
+        // @init 是一个内置事件，其在当前控件第一次被渲染后触发
+        console.log('first rendered!!!')
+    ">
+</text>
+<!-- 当然，你也可以直接这样： name="text" 来定义静态的、字符串的属性！ -->
 
-<!-- 你需要在特殊元素 script 中编写你的 JS 代码 -->
-<script>
-    // $vepp 指向 Vepp 实例
-    // $     指向 $vepp.data ，即你所有的响应性变量
-    $.txt = 'hello, world'
-    $.test = function (arg) {
+<!-- 用特殊元素 script 来编写你的 JS 代码 -->
+<!-- 下面这种 script 元素带有 pre 属性，表示其代码在 Vepp 实例创建之前执行 -->
+<script pre>
+    /* 请务必在这里定义你的响应性变量，因为如果在下一个不带有 pre 属性的 script 元素内定义它们，它们可能在第一次渲染前并未定义、初始化，以致渲染出错 */
+    // this        ：指向你所有的响应性变量
+    this.txt = 'hello, world'
+    this.test = function (arg) {
         console.log('event argument: ' + JSON.stringify(arg))
-        $.txt += '!'
+        this.txt += '!'
     }
-	
+</script>
+<!-- 这种 script 元素不带有 pre 属性，也就是说这里的代码会在 Vepp 实例创建之后（也即第一次渲染后）执行 -->
+<script>
+    // $vepp      ：指向 Vepp 实例
+    // this       ：相当于 $vepp.data ，指向你所有的响应性变量
     let watcher = () => {
-        console.log(`variable 'txt' first changed.`)
+        console.log(`variable 'txt' was first changed as: ` + this.txt)
     	// 用 $vepp.unwatch(key, func) 来取消监听变量
         $vepp.unwatch('txt', watcher)
     }
-    // 用 $vepp.watch(key, func) 来监听响应性变量
+    // 用 $vepp.watch(key, func) 来监听变量
     $vepp.watch('txt', watcher)
 </script>
 ```

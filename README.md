@@ -27,22 +27,44 @@ Let's see what ZeppOS apps made by Vepp is like:
 ```html
 <!-- this is the special syntax called VML (Vepp Markup Language), you can use it in `.vepp` suffixed files -->
 
-<!-- each element stands for a widget in ZeppOS -->
-<!-- as those in Vue etc., use `:name="expression"` to set a reactive property, `name="text"` to set a static stringify property, and `@name="statements"` to set an event -->
-<text :text="txt + '~'" @click_up="/* get event argument by built-in variable `$arg` */ test($arg)"></text>
+<!-- each common element stands for a widget in ZeppOS -->
+<text
+    :text="
+        /* use `:name='expression'` to set a reactive property */
+        txt + '~'
+    "
+    @click_up="
+        /* use `@name='statements'` to set an event */
+        // get event argument by built-in variable `$arg`
+        test($arg);
+        // get the current widget object in native by `$widget`
+        console.log('ID of the widget: ' + $widget.getId());
+    "
+    @@init="
+        // this is our built-in event named `@init`
+        // the codes here will be executed after the widget is first rendered
+        console.log('first rendered!!!')
+    ">
+</text>
+<!-- what's more, you can also use the form of `name="text"` to set a static and stringify property easily -->
 
-<!-- special element `script` which allows you to write your own JS -->
-<script>
-    // `$vepp` references to your Vepp instance
-    // `$`     the short form of $vepp.data, i.e. your reactive variables
-    $.txt = 'hello, world'
-    $.test = function (arg) {
+<!-- we have special elements `script` which allow you to write your own JS -->
+<!-- the following one has a `pre` attribute, the codes in it will be executed BEFORE Vepp's instance is initialized -->
+<script pre>
+    /* you MUST declare your reactive variables here, otherwise they may cause crash when they are not declared or initialized but are used before the first render */
+    // `this`              :    references to all your reactive variables
+    this.txt = 'hello, world'
+    this.test = function (arg) {
         console.log('event argument: ' + JSON.stringify(arg))
-        $.txt += '!'
+        this.txt += '!'
     }
-	
+</script>
+<!-- this one does not has a `pre` attribute, the codes in it will be executed AFTER Vepp's instance is initialized i.e. AFTER the first render -->
+<script>
+    // `$vepp`             :    references to your Vepp instance
+    // `this`              :    the short form of $vepp.data, i.e. your reactive variables
     let watcher = () => {
-        console.log(`variable 'txt' was first changed.`)
+        console.log(`variable 'txt' was first changed as: ` + this.txt)
     	// use `$vepp.unwatch(key, func)` to cancel watching
         $vepp.unwatch('txt', watcher)
     }

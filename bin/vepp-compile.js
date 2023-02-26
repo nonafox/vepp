@@ -110,10 +110,9 @@ let compile = (fpath) => {
     }
     compileUI(fpath, html, ui)
     
-    c_gen += 'let $ = {}; '
-    c_gen += c_mypre + '; '
-    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: Object.assign($, ${JSON.stringify(data)}) }, true); `
-    c_gen += `(function ($) { $.$w = $w; $.$h = $h; ${c_my} }).call($vepp, $vepp.data); `
+    c_gen += `let $pre_data = {}; (function () { ${c_mypre} }).call($pre_data); `
+    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: Object.assign(${JSON.stringify(data)}, $pre_data) }, true); $pre_data = null; `
+    c_gen += `(function () { this.$w = $w; this.$h = $h; ${c_my}; }).call($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
     let res = `var { width: $w, height: $h } = hmSetting.getDeviceInfo(); import Vepp from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
