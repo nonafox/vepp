@@ -53,6 +53,7 @@
     /* 请务必在这里定义你的响应性变量，因为如果在下一个不带有 pre 属性的 script 元素内定义它们，它们可能在第一次渲染前并未定义、初始化，以致渲染出错 */
     // this        ：指向你所有的响应性变量
     this.txt = 'hello, world'
+    // 警告！你不能用 lambda 形式定义响应性函数，否则 this 的指向将会不正常！
     this.test = function (arg) {
         console.log('event argument: ' + JSON.stringify(arg))
         this.txt += '!'

@@ -54,6 +54,7 @@ Let's see what ZeppOS apps made by Vepp is like:
     /* you MUST declare your reactive variables here, otherwise they may cause crash when they are not declared or initialized but are used before the first render */
     // `this`              :    references to all your reactive variables
     this.txt = 'hello, world'
+    // WARNING! you must not declare your reactive function in the form of lambda, or you won't get the `this` correctly
     this.test = function (arg) {
         console.log('event argument: ' + JSON.stringify(arg))
         this.txt += '!'
