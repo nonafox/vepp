@@ -89,7 +89,6 @@ let compileUI = (fpath, html, ui, data, pid = 'ROOT') => {
         for (let k2 in props) {
             let v2 = props[k2]
             if (k2.startsWith('@')) {
-                delete props[k2]
                 props[k2] = `($arg)=>{${v2}}`
             }
         }
