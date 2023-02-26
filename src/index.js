@@ -51,14 +51,14 @@ export default class Vepp {
                     let v = comp[k], cv
                     const handledFunc = typeof v == 'string'
                         ? new Function(
-                            '$widget',
-                            `let $=this;with(this){return(${v})}`
+                            '$', '$vepp', '$widget',
+                            `with($){return(${v})}`
                         )
                         : null
                     const update = typeof v == 'string'
                         ? () => {
                             return createReactiveContext(function () {
-                                cv = handledFunc.call(this.data, widget)
+                                cv = handledFunc.call(this, this, this.data, widget)
                             }, t)
                         }
                         : null
