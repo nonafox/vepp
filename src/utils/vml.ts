@@ -1,4 +1,4 @@
-import { GeneralUtil as GUtil } from './general'
+import { GeneralUtil as GUtil } from './general.js'
 
 export enum VMLNodeType {
     root, common, text, comment
