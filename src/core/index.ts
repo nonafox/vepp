@@ -13,7 +13,7 @@ interface I_VeppCtorOption {
 
 export class Vepp {
     private inited: boolean = false
-    private deps: Map<string, Set<Function>> = new Map()
+    private deps: { [_: string]: Set<Function> } = {}
     private ui: T_VeppCtorUIOption[]
     public data: any
 
@@ -26,8 +26,8 @@ export class Vepp {
     }
     private dep(key: string, func: Function): void {
         if (! (key in this.deps))
-            this.deps.set(key, new Set())
-        this.deps.get(key)!.add(func)
+            this.deps[key] = new Set()
+        this.deps[key].add(func)
     }
     public init(json: T_VeppCtorUIOption[] = this.ui, ctor: any = hmUI): void {
         try {
@@ -142,8 +142,8 @@ export class Vepp {
         if (! this.inited) return
         try {
             if (! (key in this.deps))
-                this.deps.set(key, new Set())
-            let v = this.deps.get(key)!
+                this.deps[key] = new Set()
+            let v = this.deps[key]
             for (let depItem of v) {
                 depItem.call(this)
             }
@@ -154,11 +154,11 @@ export class Vepp {
     }
     public watch(key: string, callback: Function): void {
         if (! (key in this.deps))
-            this.deps.set(key, new Set())
-        this.deps.get(key)!.add(callback)
+            this.deps[key] = new Set()
+        this.deps[key].add(callback)
     }
     public unwatch(key: string, callback: Function): void {
         if (key in this.deps)
-            this.deps.get(key)!.delete(callback)
+            this.deps[key].delete(callback)
     }
 }

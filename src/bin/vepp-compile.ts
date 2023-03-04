@@ -87,6 +87,8 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
         for (let k2 in props) {
             let v2 = props[k2]
             if (k2.startsWith('@')) {
+                delete props[k2]
+                k2 = k2.replace('-', '_')
                 props[k2] = `($arg)=>{${v2}}`
             }
         }
@@ -136,14 +138,14 @@ let compile = (fpath: string) => {
         }
         k ++
     }
-    let ids = GUtil.scriptReg(c_my, /\$\s*\.\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g) as RegExpExecArray[]
+    let ids = GUtil.scriptReg(c_my, /this\s*\.\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\b/ig) as RegExpExecArray[]
     for (let v of ids) {
         data[v[1]] = null
     }
     compileUI(fpath, vml, ui, data)
     
     c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: {} }, true); `
-    c_gen += `$vepp.data = Object.assign($vepp.data, ${JSON.stringify(data)}); (function () { ${c_mypre} }).call($vepp.data); $vepp.init(); `
+    c_gen += `let $pre_data = ${JSON.stringify(data)}; for (let k in $pre_data) { $vepp.data[k] = $pre_data[k]; }; $pre_data = null; (function () { ${c_mypre} }).call($vepp.data); $vepp.init(); `
     c_gen += `(function () { this.$w = $w; this.$h = $h; ${c_my}; }).call($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
