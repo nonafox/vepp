@@ -1,11 +1,14 @@
 # Vepp
-一个为ZeppOS打造的轻量JavaScript框架。其起初目的是改善原生ZeppOS中控件系统的糟糕体验，使开发更加现代化。
+
+一个为 ZeppOS 打造的轻量 JavaScript 框架。其起初目的是改善原生 ZeppOS 中控件系统的糟糕体验，使开发更加现代化。
 
 # 多语言
+
 - [English](https://github.com/jwhgzs/vepp/blob/master/README.md)
 - 中文（当前）
 
 # 开始之前
+
 首先你得知道，在ZeppOS中有很多难解决的开发限制：
 
 - `eval()` 和 `new Function()` 被初级禁用
@@ -22,6 +25,7 @@
 现在，让我们开始吧~
 
 # 快速开始
+
 让我们先来看看用 Vepp 开发的 ZeppOS 程序长什么样吧：
 
 ```html
@@ -134,6 +138,7 @@ vepp auto
 够简单了吧？除了设置名为 `:value` 的 property ，你无需写任何逻辑代码即可实现表单的数据流。我认为没有必要介绍更多详细内容了！
 
 # Polyfills
+
 Vepp 为你准备了多样、实用的 polyfills ，这里给出它们的列表：
 
 - class `Buffer`

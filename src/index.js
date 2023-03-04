@@ -8,17 +8,17 @@ export default class Vepp {
         if (! builtin) {
             throw new Error(`Invalid usage of Vepp.`)
         }
+        this.inited = false
         this.ui = opts.ui || []
         this.data = createProxy(opts.data || {}, this.update, this)
         this.deps = {}
-        this.parse(hmUI, this.ui)
     }
     dep(key, func) {
         if (! (key in this.deps))
             this.deps[key] = new Set()
         this.deps[key].add(func)
     }
-    parse(ctor, json) {
+    init(json = this.ui, ctor = hmUI) {
         try {
             const t = this
 
@@ -81,7 +81,7 @@ export default class Vepp {
                         let rk = k.substring(1)
                         if (rk == 'children') {
                             if (v.length && widget.createWidget) {
-                                this.parse(widget, v)
+                                this.init(v, widget)
                             }
                         }
                     }
@@ -124,8 +124,10 @@ export default class Vepp {
         catch (ex) {
             throw new Error(`Error when initializing Vepp: ` + ex)
         }
+        this.inited = true
     }
     update(key) {
+        if (! this.inited) return
         try {
             if (! (key in this.deps))
                 this.deps[key] = new Set()

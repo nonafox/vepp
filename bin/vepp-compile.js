@@ -138,8 +138,8 @@ let compile = (fpath) => {
     }
     compileUI(fpath, html, ui, data)
     
-    c_gen += `let $pre_data = ${JSON.stringify(data)}; (function () { ${c_mypre} }).call($pre_data); `
-    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: $pre_data }, true); $pre_data = null; `
+    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: {} }, true); `
+    c_gen += `$vepp.data = Object.assign($vepp.data, ${JSON.stringify(data)}); (function () { ${c_mypre} }).call($vepp.data); $vepp.init(); `
     c_gen += `(function () { this.$w = $w; this.$h = $h; ${c_my}; }).call($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
