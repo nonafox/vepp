@@ -147,7 +147,7 @@ let compile = (fpath: string) => {
     c_gen += `(function () { this.$w = $w; this.$h = $h; ${c_my}; }).call($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
-    let res = `var { width: $w, height: $h } = hmSetting.getDeviceInfo(); import Vepp from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
+    let res = `var { width: $w, height: $h } = hmSetting.getDeviceInfo(); import { Vepp } from 'vepp'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
     fs.writeFileSync(aname, res)
 }
 if (fs.existsSync(rpath + 'page/'))

@@ -1,4 +1,4 @@
-import './polyfill.js'
+import './polyfills/index.js'
 
 import { T_JSON } from '../utils/general.js'
 import { createProxy, createReactiveContext } from './proxy.js'
