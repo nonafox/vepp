@@ -1,62 +1,80 @@
-import Util from './general.js'
+import { GeneralUtil as GUtil } from './general'
 
-export default class TDom {
-    isValidName(text) {
+export enum VMLNodeType {
+    root, common, text, comment
+}
+
+export type VMLNodeAttrs = { [_: string]: string }
+
+export class VMLNode {
+    public type: VMLNodeType = VMLNodeType.common
+    public tag: string | null = null
+    public attrs: VMLNodeAttrs = {}
+    public text: string | null = null
+    public children: VMLNode[] = []
+}
+
+enum VMLParserStatus {
+    common, quote
+}
+
+export class VMLParser {
+    private static isValidName(text: string): boolean {
         return /^[a-zA-Z\-_\@\:][a-zA-Z0-9\-_\@\:]*$/.test(text)
     }
-    isQuote(v) {
+    private static isQuote(v: string): boolean {
         return v == `'` || v == `"`
     }
-    isVoidChar(char) {
+    private static isVoidChar(char: string): boolean {
         return ! char || char == ' ' || char == '\t' || char == '\n' || char == '\r'
     }
-    readPath(res, path) {
-        let tmp = res
-        for (let k in path) {
-            let v = path[k]
-            tmp = tmp.children[v]
+    private static readPath(res: VMLNode, path: number[]): VMLNode {
+        for (let v of path) {
+            res = res.children[v]
         }
-        return tmp
+        return res
     }
-    pushPath(res, path, value) {
-        let tmp = res
-        for (let k in path) {
-            let v = path[k]
+    private static pushPath(res: VMLNode, path: number[], value: VMLNode): void {
+        let k = 0
+        for (let v of path) {
             if (path.length - 1 > k)
-                tmp = tmp.children[v]
+                res = res.children[v]
+            k ++
         }
-        tmp.children[path[path.length - 1]] = value
+        res.children[path[path.length - 1]] = value
     }
-    nextSibilingPath(path) {
-        let tmp = Util.deepCopy(path)
+    private static nextSibilingPath(path: number[]): number[] {
+        let tmp = GUtil.deepCopy(path)
         tmp[path.length ? path.length - 1 : 0] = (path[path.length - 1] || 0) + 1
         return tmp
     }
-    nextChildPath(res, path) {
-        let tmp = Util.deepCopy(path)
+    private static nextChildPath(res: VMLNode, path: number[]): number[] {
+        let tmp = GUtil.deepCopy(path)
         tmp.push(this.readPath(res, path).children.length)
         return tmp
     }
-    nextPath(res, openedPaths, oldPath) {
+    private static nextPath(res: VMLNode, openedPaths: number[][], oldPath: number[]): number[] {
         if (openedPaths.indexOf(oldPath) < 0)
             return this.nextSibilingPath(oldPath)
         else
             return this.nextChildPath(res, oldPath)
     }
-    read(src) {
+    public static read(src: string): VMLNode | string {
         let arr = (src + ' ').split('')
-        let VNodeTemplate = Util.VNodeTemplate,
-            res = Util.deepCopy(VNodeTemplate, { type: 'root' }),
-            currentPath = [-1], currentVNode = {}, openedPaths = [], status = 'common',
-            quoteStarter = null, quoteText = '', quoteAvailable = false, tagStatus = false,
-            isEndTag = false, isSelfClosingTag = false, isTextOnly = false, currentTag = '',
-            currentAttrsRaw = '', currentAttrs = {}, isTagRead = false, isComment = false,
-            commentText = ''
+
+        const res = new VMLNode(), openedPaths = []
+        res.type = VMLNodeType.root
+        let currentPath = [-1], currentVNode = new VMLNode(), status = VMLParserStatus.common
+        let quoteStarter = null, quoteText = '', quoteAvailable = false
+        let tagStatus = false, isEndTag = false, isSelfClosingTag = false, currentTag = '', isTagRead = false
+        let currentAttrsRaw = '', currentAttrs: VMLNodeAttrs = {}
+        let isComment = false, commentText = ''
+        let isTextOnly = false
         
         for (let k = 0; k < arr.length; k ++) {
             let v = arr[k]
             
-            if (status == 'common') {
+            if (status == VMLParserStatus.common) {
                 if (! isComment) {
                     if (tagStatus) {
                         if (! isTagRead && this.isValidName(v)) {
@@ -67,8 +85,8 @@ export default class TDom {
                             currentTag = currentTag.toLowerCase()
                             currentVNode.tag = currentTag
                             
-                            isSelfClosingTag = Util.selfClosingTags.indexOf(currentTag) >= 0
-                            isTextOnly = Util.textOnlyTags.indexOf(currentTag) >= 0
+                            isSelfClosingTag = GUtil.selfClosingTags.indexOf(currentTag) >= 0
+                            isTextOnly = GUtil.textOnlyTags.indexOf(currentTag) >= 0
                             if (isSelfClosingTag)
                                 openedPaths.splice(openedPaths.indexOf(currentPath), 1)
                         }
@@ -76,7 +94,7 @@ export default class TDom {
                                 && (this.isValidName(v) || this.isQuote(v))) {
                             if (this.isQuote(v)) {
                                 quoteStarter = v
-                                status = 'quote'
+                                status = VMLParserStatus.quote
                             }
                             else if (v != '=') {
                                 currentAttrsRaw += v
@@ -102,9 +120,9 @@ export default class TDom {
                     }
                     let path = openedPaths[openedPaths.length - 1],
                         tag = this.readPath(res, path).tag || '',
-                        isValidEndTag = '</' + tag == src.substr(k, tag.length + 2)
+                        isValidEndTag = '</' + tag == src.substring(k, tag.length + 2 + k)
                     if ((! isTextOnly && v == '<') || (isTextOnly && isValidEndTag)) {
-                        if (! isTextOnly && src.substr(k, `<!--`.length) == `<!--`) {
+                        if (! isTextOnly && src.substring(k, `<!--`.length + k) == `<!--`) {
                             isComment = true
                             commentText = ''
                             k += `<!--`.length - 1
@@ -128,7 +146,7 @@ export default class TDom {
                             currentAttrs = {}
                             isTagRead = false
                             currentPath = this.nextPath(res, openedPaths, currentPath)
-                            currentVNode = Util.deepCopy(VNodeTemplate)
+                            currentVNode = new VMLNode()
                             openedPaths.push(currentPath)
                             this.pushPath(res, currentPath, currentVNode)
                         }
@@ -143,25 +161,24 @@ export default class TDom {
                     }
                     else if (! tagStatus) {
                         let lastNode = this.readPath(res, currentPath) || {}
-                        if (! lastNode.tag && lastNode.type == 'text') {
+                        if (! lastNode.tag && lastNode.type == VMLNodeType.text) {
                             currentVNode.text += v
                             this.pushPath(res, currentPath, currentVNode)
-                        } else {
+                        }
+                        else {
                             currentPath = this.nextPath(res, openedPaths, currentPath)
-                            currentVNode = Util.deepCopy(
-                                VNodeTemplate,
-                                { type: 'text', text: v }
-                            )
+                            currentVNode = new VMLNode()
+                            currentVNode.type = VMLNodeType.text
+                            currentVNode.text = v
                             this.pushPath(res, currentPath, currentVNode)
                         }
                     }
                 }
-                else if (src.substr(k, `-->`.length) == `-->`) {
+                else if (src.substring(k, `-->`.length + k) == `-->`) {
                     currentPath = this.nextPath(res, openedPaths, currentPath)
-                    currentVNode = Util.deepCopy(
-                        VNodeTemplate,
-                        { type: 'comment', text: commentText }
-                    )
+                    currentVNode = new VMLNode()
+                    currentVNode.type = VMLNodeType.comment
+                    currentVNode.text = commentText
                     this.pushPath(res, currentPath, currentVNode)
                     isComment = false
                     commentText = ''
@@ -171,35 +188,35 @@ export default class TDom {
                     commentText += v
                 }
             }
-            else if (status == 'quote') {
+            else if (status == VMLParserStatus.quote) {
                 quoteAvailable = true
                 if (v == quoteStarter) {
                     quoteStarter = null
-                    status = 'common'
+                    status = VMLParserStatus.common
                     continue
                 }
                 quoteText += v
             }
         }
         
-        if (openedPaths.length || status != 'common')
+        if (openedPaths.length || status != VMLParserStatus.common)
             return `Node tags tree is not valid, maybe there are some unclosed tags.`
         
         res.children.pop()
         return res
     }
-    patch(tree, plainMode = false) {
+    public static patch(tree: VMLNode | VMLNode[], plainMode = false): string {
         if (! Array.isArray(tree))
             return this.patch(tree.children, plainMode)
         
         let res = ''
         for (let k in tree) {
             let v = tree[k],
-                singleTag = Util.selfClosingTags.indexOf(v.tag) >= 0
+                singleTag = GUtil.selfClosingTags.indexOf(v.tag!) >= 0
             
             if (v.tag) {
                 let children = v.children.length
-                        ? this.patch(v.children, Util.textOnlyTags.indexOf(v.tag) >= 0)
+                        ? this.patch(v.children, GUtil.textOnlyTags.indexOf(v.tag) >= 0)
                         : '',
                     attrs = ''
                 for (let k2 in v.attrs) {
@@ -214,16 +231,16 @@ export default class TDom {
                 let rtag = singleTag ? '' : `</${v.tag}>`
                 res += `<${v.tag}${attrs}${slash}>${children}${rtag}`
             }
-            else if (v.type == 'text') {
+            else if (v.type == VMLNodeType.text) {
                 if (plainMode)
                     res += v.text
                 else
-                    res += v.text
+                    res += v.text!
                         .replace(/</g, '&lt;')
                         .replace(/>/g, '&gt;')
                         .replace(/(\s|&nbsp;)+/g, ' ')
             }
-            else if (v.type == 'comment') {
+            else if (v.type == VMLNodeType.comment) {
                 res += `<!--${v.text}-->`
             }
         }

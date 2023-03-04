@@ -1,7 +1,7 @@
-import Util from '../utils/general.js'
+import { GeneralUtil as GUtil, T_JSON } from '../utils/general'
 
-let reactiveContext = null, reactiveDeps = new Set()
-export function createReactiveContext(func, _this) {
+let reactiveContext: Function | null = null, reactiveDeps: Set<string> = new Set()
+export function createReactiveContext(func: Function, _this: any): Set<string> {
     reactiveContext = () => func.call(_this)
     reactiveDeps = new Set()
     reactiveContext()
@@ -9,27 +9,29 @@ export function createReactiveContext(func, _this) {
     return reactiveDeps
 }
 
-export function createProxy(obj, notifier, _this, key = null) {
+export function createProxy(obj: T_JSON, notifier: Function, _this: any, key?: string): any {
     for (let k in obj) {
         let v = obj[k]
-        if (Util.isPlainObject(v)) {
+        if (GUtil.isPlainObject(v)) {
             obj[k] = createProxy(v, notifier, _this, key || k)
         }
     }
     
     const proxy = new Proxy(obj, {
-        get(t, k) {
+        get(t: T_JSON, k: string | symbol): any {
+            if (typeof k == 'symbol') return
             const rk = key || k
             if (reactiveContext && typeof rk == 'string')
                 reactiveDeps.add(rk)
             const raw = t[k]
             if (typeof raw == 'function')
-                return (...args) => raw.call(proxy, args)
+                return (...args: any[]) => raw.call(proxy, args)
             return raw
         },
-        set(t, k, v) {
+        set(t: T_JSON, k: string | symbol, v: any): boolean {
+            if (typeof k == 'symbol') return false
             if (t[k] !== v) {
-                if (Util.isPlainObject(v))
+                if (GUtil.isPlainObject(v))
                     t[k] = createProxy(v, notifier, _this, key || k)
                 else
                     t[k] = v
@@ -37,20 +39,22 @@ export function createProxy(obj, notifier, _this, key = null) {
             }
             return true
         },
-        deleteProperty(t, k) {
+        deleteProperty(t: T_JSON, k: string | symbol): boolean {
+            if (typeof k == 'symbol') return false
             delete t[k]
             notifier.call(_this, key || k)
             return true
         },
-        getOwnPropertyDescriptor(t, k) {
+        getOwnPropertyDescriptor(t: T_JSON, k: string | symbol): PropertyDescriptor | undefined {
             return Object.getOwnPropertyDescriptor(t, k)
         },
-        ownKeys(t) {
+        ownKeys(t: T_JSON): (string | symbol)[] {
             return Reflect.ownKeys(t)
         },
-        has(t, k) {
+        has(t: T_JSON, k: string | symbol) {
             return k in t
         }
     })
+
     return proxy
 }

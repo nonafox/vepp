@@ -5,16 +5,17 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { execSync } from 'child_process'
 import watch from 'node-watch'
-import Util from '../utils/general.js'
+
+import { GeneralUtil as GUtil } from '../utils/general'
 
 program.parse(process.argv)
 let rpath = path.resolve('.')
 
 console.log(chalk.bgBlue('NOTICE! If this does not work as usual, please make sure that other file watchers (like ZeppCLI) are not working!'))
 
-let handler = (evt = null, fname = '') => {
+let handler = (_: any = null, fname: string = '') => {
     let spath = path.relative(rpath, fname)
-    if (fname && (path.extname(fname) != Util.ext || spath.indexOf('node_modules/') >= 0))
+    if (fname && (path.extname(fname) != GUtil.ext || spath.indexOf('node_modules/') >= 0))
         return
     if (fname)
         console.log(chalk.blue(`- file changed: ${spath}`))

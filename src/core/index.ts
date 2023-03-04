@@ -1,43 +1,55 @@
 import './polyfill.js'
 
-import { createProxy, createReactiveContext } from './proxy.js'
-import { needFuckWidgets, defaultConfig } from './config.js'
+import { T_JSON } from '../utils/general'
+import { createProxy, createReactiveContext } from './proxy'
+import { needFuckWidgets, defaultConfig } from './config'
 
-export default class Vepp {
-    constructor(opts, builtin = false) {
+export type T_VeppCtorUIOption = { [_: string]: string | T_VeppCtorUIOption[] }
+
+interface I_VeppCtorOption {
+    ui: T_VeppCtorUIOption[]
+    data: Map<string, any>
+}
+
+export class Vepp {
+    private inited: boolean = false
+    private deps: Map<string, Set<Function>> = new Map()
+    private ui: T_VeppCtorUIOption[]
+    public data: any
+
+    public constructor(opts: I_VeppCtorOption, builtin: boolean = false) {
         if (! builtin) {
             throw new Error(`Invalid usage of Vepp.`)
         }
-        this.inited = false
         this.ui = opts.ui || []
         this.data = createProxy(opts.data || {}, this.update, this)
-        this.deps = {}
     }
-    dep(key, func) {
+    private dep(key: string, func: Function): void {
         if (! (key in this.deps))
-            this.deps[key] = new Set()
-        this.deps[key].add(func)
+            this.deps.set(key, new Set())
+        this.deps.get(key)!.add(func)
     }
-    init(json = this.ui, ctor = hmUI) {
+    public init(json: T_VeppCtorUIOption[] = this.ui, ctor: any = hmUI): void {
         try {
             const t = this
 
             for (let n in json) {
                 const comp = json[n]
-                const tag = comp.$tag.toUpperCase()
+                const tag = (comp.$tag as string).toUpperCase()
                 const needToFuck = needFuckWidgets.indexOf(tag) >= 0
                 
                 const defaultProps = Object.assign(
-                    {}, defaultConfig[tag] || defaultConfig[null]
+                    {}, defaultConfig[tag] || defaultConfig['']
                 )
                 const widget = ctor.createWidget(
-                    hmUI.widget[tag],
+                    (hmUI.widget as T_JSON)[tag],
                     defaultProps
                 )
                 if (! widget)
                     break
-                const eventsBuf = {}, depsBuf = new Set(),
-                    xpropsBuf = needToFuck
+                const eventsBuf: { [_: string]: Function } = {},
+                    depsBuf = new Set(),
+                    xpropsBuf: { [_: string]: any } | null = needToFuck
                         ? {
                             x: defaultProps.x,
                             y: defaultProps.y,
@@ -48,7 +60,7 @@ export default class Vepp {
                 let initEvent = null
                 
                 for (let k in comp) {
-                    let v = comp[k], cv
+                    let v = comp[k], cv: any
                     const handledFunc = typeof v == 'string'
                         ? new Function(
                             '$vepp', '$widget',
@@ -57,16 +69,16 @@ export default class Vepp {
                         : null
                     const update = typeof v == 'string'
                         ? () => {
-                            return createReactiveContext(function () {
-                                cv = handledFunc.call(this.data, this, widget)
+                            return createReactiveContext(function (this: T_JSON) {
+                                cv = handledFunc!.call(this.data, this, widget)
                             }, t)
                         }
                         : null
 
                     if (k.startsWith('@')) {
                         let rk2 = k.substring(1),
-                            rk = hmUI.event[rk2.toUpperCase()]
-                        update()
+                            rk = (hmUI.event as T_JSON)[rk2.toUpperCase()]
+                        update!()
                         if (rk2 == '@init') {
                             initEvent = cv
                         }
@@ -81,25 +93,25 @@ export default class Vepp {
                         let rk = k.substring(1)
                         if (rk == 'children') {
                             if (v.length && widget.createWidget) {
-                                this.init(v, widget)
+                                this.init(v as T_VeppCtorUIOption[], widget)
                             }
                         }
                     }
                     else {
-                        let rk = hmUI.prop[k.toUpperCase()],
+                        let rk = (hmUI.prop as T_JSON)[k.toUpperCase()],
                             rk2 = k.toLowerCase()
                         const propUpdater = () => {
-                            const deps = update()
+                            const deps = update!()
                             if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
                                 if (needToFuck
                                         && (rk2 == 'x' || rk2 == 'y' || rk2 == 'w' || rk2 == 'h'))
-                                    xpropsBuf[rk2] = cv
+                                    xpropsBuf![rk2] = cv
                             }
                             else if (needToFuck) {
-                                xpropsBuf[rk2] = cv
+                                xpropsBuf![rk2] = cv
                                 widget.setProperty(hmUI.prop.MORE, xpropsBuf)
-                                delete xpropsBuf[rk2]
+                                delete xpropsBuf![rk2]
                             }
                             else {
                                 widget.setProperty(hmUI.prop.MORE, {
@@ -124,14 +136,15 @@ export default class Vepp {
         catch (ex) {
             throw new Error(`Error when initializing Vepp: ` + ex)
         }
+        
         this.inited = true
     }
-    update(key) {
+    private update(key: string): void {
         if (! this.inited) return
         try {
             if (! (key in this.deps))
-                this.deps[key] = new Set()
-            let v = this.deps[key]
+                this.deps.set(key, new Set())
+            let v = this.deps.get(key)!
             for (let depItem of v) {
                 depItem.call(this)
             }
@@ -140,13 +153,13 @@ export default class Vepp {
             throw new Error(`Error when Vepp does update: ` + ex)
         }
     }
-    watch(key, callback) {
+    public watch(key: string, callback: Function): void {
         if (! (key in this.deps))
-            this.deps[key] = new Set()
-        this.deps[key].add(callback)
+            this.deps.set(key, new Set())
+        this.deps.get(key)!.add(callback)
     }
-    unwatch(key, callback) {
+    public unwatch(key: string, callback: Function): void {
         if (key in this.deps)
-            this.deps[key].delete(callback)
+            this.deps.get(key)!.delete(callback)
     }
 }

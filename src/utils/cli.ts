@@ -1,7 +1,7 @@
 import fs from 'fs'
 
-export default {
-    delDir(path) {
+export class CLIUtil {
+    public static delDir(path: string): void {
         let arr = fs.readdirSync(path)
         for (let k in arr) {
             let v = path + '/' + arr[k]

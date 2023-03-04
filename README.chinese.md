@@ -1,6 +1,6 @@
 # Vepp
 
-一个为 ZeppOS 打造的轻量 JavaScript 框架。其起初目的是改善原生 ZeppOS 中控件系统的糟糕体验，使开发更加现代化。
+一个为 ZeppOS 打造的轻量级 TypeScript 框架。其起初目的是改善原生 ZeppOS 中控件系统的糟糕体验，使开发更加现代化。
 
 # 多语言
 
@@ -9,9 +9,9 @@
 
 # 开始之前
 
-首先你得知道，在ZeppOS中有很多难解决的开发限制：
+首先你得知道，在 ZeppOS 中有很多难解决的开发限制：
 
-- `eval()` 和 `new Function()` 被初级禁用
+- `eval()` 和 `new Function()` 被禁用
 - 糟糕的控件系统
 - 糟糕的运行效率（也许是普遍的硬件问题）
 
@@ -45,7 +45,7 @@
         /* 用 @name='statements' 的形式定义事件 */
         // 通过内置变量 $arg 获取事件参数
         test($arg);
-        // 通过内置变量 $widget 获取当前控件对象（ZeppOS 原生）
+        // 通过内置变量 $widget 获取当前控件对象（原生的 ZeppOS 控件对象）
         console.log('ID of the widget: ' + $widget.getId());
     "
     @@init="
@@ -61,8 +61,8 @@
     /* 请务必在这里定义你的响应性变量，因为如果在下一个不带有 pre 属性的 script 元素内定义它们，它们可能在第一次渲染前并未定义、初始化，以致渲染出错 */
     // this        ：指向你所有的响应性变量
     this.txt = 'hello, world'
-    // 警告！你不能用 lambda 形式定义响应性函数，否则 this 的指向将会不正常！
-    this.test = function (arg) {
+    // 不用担心 lambda 表达式的 this 指向问题， Vepp 早已为你解决！
+    this.test = (arg) => {
         console.log('event argument: ' + JSON.stringify(arg))
         this.txt += '!'
     }

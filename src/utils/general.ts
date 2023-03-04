@@ -1,17 +1,13 @@
-export default {
-    ext: '.vepp',
-    selfClosingTags: [],
-    textOnlyTags: ['script'],
-    VNodeTemplate: {
-        tag: null,
-        type: 'common',
-        attrs: {},
-        text: null,
-        children: []
-    },
-    tmpPrefix: '$tmp__',
+export type T_JSON = { [_: string]: any }
+
+export class GeneralUtil {
+    public static ext: string = '.vepp'
+    public static selfClosingTags: string[] = []
+    public static textOnlyTags: string[] = ['script']
+    public static tmpPrefix: string = '$tmp__'
+    private static voidChar: string = '\uffff'
     
-    randomText(len = 6) {
+    public static randomText(len: number = 6): string {
         let sets = 'abcdefghijklmnopqrstuvwxyz0123456789',
             res = ''
         for (let k = 0; k < len; k ++) {
@@ -19,45 +15,34 @@ export default {
             res += c
         }
         return res
-    },
-    isPlainObject(obj) {
+    }
+    public static isPlainObject(obj: any): boolean {
         return obj && (obj.constructor === Object || Array.isArray(obj))
-    },
-    _deepCopy(obj) {
+    }
+    private static deepCopyRaw(obj: any, dest?: any): any {
         if (! this.isPlainObject(obj))
             return obj
-        let res = Array.isArray(obj) ? [] : {},
-            keys = Object.keys(obj)
-        for (let kk = 0; kk < keys.length; kk ++) {
-            let k = keys[kk],
-                v = obj[k]
-            res[k] = this._deepCopy(v)
+        dest = dest || {}
+        for (let k in obj) {
+            dest[k] = this.deepCopyRaw(obj[k])
         }
-        return res
-    },
-    deepCopy(...objs) {
-        if (objs.length === 1)
-            return this._deepCopy(objs[0])
-        
-        let res = Array.isArray(objs[0]) ? [] : {}
-        for (let k in objs) {
-            let v = objs[k]
-            let keys = Object.keys(v)
-            for (let kk = 0; kk < keys.length; kk ++) {
-                let k2 = keys[kk],
-                    v2 = v[k2]
-                res[k2] = this._deepCopy(v2)
-            }
+        return dest
+    }
+    public static deepCopy(...objs: any[]): any {
+        if (objs.length == 1)
+            return this.deepCopyRaw(objs[0])
+        const ret = {}
+        for (let v of objs) {
+            this.deepCopyRaw(v, ret)
         }
-        
-        return res
-    },
-    isScriptQuote(text, k) {
+        return ret
+    }
+    private static isScriptQuote(text: string, k: number): boolean {
         return (text[k] == `'` || text[k] == `"` || text[k] == '`') && text[k - 1] != '\\'
-    },
-    voidChar: '\uffff',
-    scriptReg(_script, regexp, replace = null) {
-        let script = _script.split(''), quoteStarter = null, addup = ''
+    }
+    public static scriptReg(script: string, regexp: RegExp, replace?: string): string | RegExpExecArray[] {
+        let quoteStarter = null,
+            addup = ''
         
         let reps = [], repsid = -1
         for (let k = 0; k < script.length; k ++) {
@@ -77,13 +62,14 @@ export default {
                 if (this.isScriptQuote(script, k) && v == quoteStarter) {
                     addup += v
                     quoteStarter = null
-                } else {
+                }
+                else {
                     reps[repsid] += v
                 }
             }
         }
         
-        if (replace !== null) {
+        if (replace) {
             addup = addup.replace(regexp, replace)
             for (let k in reps) {
                 let v = reps[k]

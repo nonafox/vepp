@@ -1,20 +1,20 @@
-import './polyfills/device-polyfill.js'
-import { getGlobal } from './polyfills/global.js'
+import './device-polyfill.js'
+import { getGlobal } from './global.js'
 
-const global = getGlobal()
+const glob = getGlobal()
 
 const functionCtor = (function () {}).constructor
-global.Function = function (...args) {
+glob.Function = function (...args) {
     return new functionCtor(...args)
 }
 
 const consoleTime = {}
-global.console.time = function (tag) {
+glob.console.time = function (tag) {
     if (tag in consoleTime)
         console.log(`Timer '${tag}' already exists`)
     consoleTime[tag] = new Date().valueOf()
 }
-global.console.timeEnd = function (tag) {
+glob.console.timeEnd = function (tag) {
     if (! (tag in consoleTime)) {
         console.log(`Timer '${tag}' does not exist`)
     } else {

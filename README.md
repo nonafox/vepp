@@ -1,6 +1,6 @@
 # Vepp
 
-A light JavaScript framework for ZeppOS, be maked to solve the rubbish widget system in native ZeppOS.
+A light TypeScript framework for ZeppOS, be maked to solve the rubbish widget system in native ZeppOS.
 
 # Languagues
 
@@ -11,9 +11,9 @@ A light JavaScript framework for ZeppOS, be maked to solve the rubbish widget sy
 
 You have to know, in ZeppOS, there are so many hard-to-solve limits:
 
-- `eval()` and `new Function()`'s limits
+- `eval()` and `new Function()` are disabled
 - Rubbish widget system
-- Rubbish running efficiency
+- Rubbish running efficiency (may be caused by hardware)
 
 But maybe you don't believe, Vepp solves all of them:
 
@@ -62,8 +62,8 @@ Let's see what ZeppOS apps made by Vepp is like:
     /* you MUST declare your reactive variables here, otherwise they may cause crash when they are not declared or initialized but are used before the first render */
     // `this`              :    references to all your reactive variables
     this.txt = 'hello, world'
-    // WARNING! you must not declare your reactive function in the form of lambda, or you won't get the `this` correctly
-    this.test = function (arg) {
+    // don't worry about the reference of `this` in the lambda expression, Vepp solves it for you!
+    this.test = (arg) => {
         console.log('event argument: ' + JSON.stringify(arg))
         this.txt += '!'
     }
@@ -84,7 +84,7 @@ Let's see what ZeppOS apps made by Vepp is like:
 
 Are you surprised? Yes, that's the way to work with her: everyone who has experienced front-end development knows how to use it now!
 
-But wait a moment! This syntax which seems like HTML can not be compiled by ZeppCLI directly. You may use Vepp's CLI and be with its help. Here is how to install Vepp and its CLI:
+But wait a moment! This syntax which seems like HTML cannot be compiled by ZeppCLI directly. You may use Vepp's CLI and be with its help. Here is how to install Vepp and its CLI:
 
 ```bash
 # Vepp merges its core part and its CLI in a package.
@@ -104,7 +104,7 @@ vepp compile
 It's done! What's more, you can do this and use the watcher mode to compile automatically when changing:
 
 ```bash
-# WARNING: although this mode is cool, it can not work as usual while other file watchers are working (like ZeppCLI)
+# WARNING: although this mode is cool, it may not work as usual while other file watchers are working (like ZeppCLI)
 vepp auto
 ```
 

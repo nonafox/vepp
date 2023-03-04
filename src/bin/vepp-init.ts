@@ -8,7 +8,7 @@ import ora from 'ora'
 import { execSync } from 'child_process'
 import inquirer from 'inquirer'
 
-import CUtil from '../utils/cli.js'
+import { CLIUtil as CUtil } from '../utils/cli'
 
 program
     .usage(`<project-name>`)
@@ -37,7 +37,7 @@ console.log()
 if (fs.existsSync(rpath))
     CUtil.delDir(rpath)
 
-download('jwhgzs/vepp-template', rpath, { clone: false }, function (err) {
+download('jwhgzs/vepp-template', rpath, { clone: false }, function (err: any) {
     try {
         spinner.stop()
         if (err) {
