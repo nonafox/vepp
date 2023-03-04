@@ -5,9 +5,9 @@ import chalk from 'chalk'
 import fs from 'fs'
 import ora from 'ora'
 
-import { T_VeppCtorUIOption } from '../core/index'
-import { GeneralUtil as GUtil, T_JSON } from '../utils/general'
-import { VMLParser, VMLNode } from '../utils/vml'
+import { T_VeppCtorUIOption } from '../core/index.js'
+import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
+import { VMLParser, VMLNode } from '../utils/vml.js'
 
 program.parse(process.argv)
 let rpath = path.resolve('.') + '/'

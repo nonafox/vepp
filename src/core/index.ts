@@ -1,8 +1,8 @@
 import './polyfill.js'
 
-import { T_JSON } from '../utils/general'
-import { createProxy, createReactiveContext } from './proxy'
-import { needFuckWidgets, defaultConfig } from './config'
+import { T_JSON } from '../utils/general.js'
+import { createProxy, createReactiveContext } from './proxy.js'
+import { needFuckWidgets, defaultConfig } from './config.js'
 
 export type T_VeppCtorUIOption = { [_: string]: string | T_VeppCtorUIOption[] }
 

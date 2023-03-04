@@ -6,7 +6,7 @@ import ora from 'ora'
 import { execSync } from 'child_process'
 import watch from 'node-watch'
 
-import { GeneralUtil as GUtil } from '../utils/general'
+import { GeneralUtil as GUtil } from '../utils/general.js'
 
 program.parse(process.argv)
 let rpath = path.resolve('.')

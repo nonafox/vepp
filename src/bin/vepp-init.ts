@@ -8,7 +8,7 @@ import ora from 'ora'
 import { execSync } from 'child_process'
 import inquirer from 'inquirer'
 
-import { CLIUtil as CUtil } from '../utils/cli'
+import { CLIUtil as CUtil } from '../utils/cli.js'
 
 program
     .usage(`<project-name>`)

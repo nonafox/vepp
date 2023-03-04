@@ -1,4 +1,4 @@
-import { GeneralUtil as GUtil, T_JSON } from '../utils/general'
+import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
 
 let reactiveContext: Function | null = null, reactiveDeps: Set<string> = new Set()
 export function createReactiveContext(func: Function, _this: any): Set<string> {
