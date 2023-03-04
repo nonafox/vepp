@@ -26,13 +26,13 @@ export class GeneralUtil {
             dest = dest || []
             if (Array.isArray(dest)) {
                 for (let v of obj) {
-                    dest.push(v)
+                    dest.push(this.deepCopyRaw(v))
                 }
             }
             else {
                 let k = 0
                 for (let v of obj) {
-                    dest[k] = v
+                    dest[k] = this.deepCopyRaw(v)
                     k ++
                 }
             }

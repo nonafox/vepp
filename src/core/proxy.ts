@@ -9,7 +9,7 @@ export function createReactiveContext(func: Function, _this: any): Set<string> {
     return reactiveDeps
 }
 
-export function createProxy(obj: T_JSON, notifier: Function, _this: any, key?: string): any {
+export function createProxy(obj: T_JSON, notifier: Function, _this: any, key: string | null = null): any {
     for (let k in obj) {
         let v = obj[k]
         if (GUtil.isPlainObject(v)) {
