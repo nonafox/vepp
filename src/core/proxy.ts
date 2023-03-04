@@ -19,19 +19,17 @@ export function createProxy(obj: T_JSON, notifier: Function, _this: any, key?: s
     
     const proxy = new Proxy(obj, {
         get(t: T_JSON, k: string | symbol): any {
-            if (typeof k == 'symbol') return
             const rk = key || k
             if (reactiveContext && typeof rk == 'string')
                 reactiveDeps.add(rk)
             const raw = t[k]
             if (typeof raw == 'function')
-                return (...args: any[]) => raw.call(proxy, args)
+                return (...args: any[]) => raw.call(proxy, ...args)
             return raw
         },
         set(t: T_JSON, k: string | symbol, v: any): boolean {
-            if (typeof k == 'symbol') return false
             if (t[k] !== v) {
-                if (GUtil.isPlainObject(v))
+                if (GUtil.isPlainObject(v) && typeof k == 'string')
                     t[k] = createProxy(v, notifier, _this, key || k)
                 else
                     t[k] = v
@@ -40,7 +38,6 @@ export function createProxy(obj: T_JSON, notifier: Function, _this: any, key?: s
             return true
         },
         deleteProperty(t: T_JSON, k: string | symbol): boolean {
-            if (typeof k == 'symbol') return false
             delete t[k]
             notifier.call(_this, key || k)
             return true
