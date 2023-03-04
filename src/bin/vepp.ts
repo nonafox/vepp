@@ -6,7 +6,7 @@ import fs from 'fs'
 
 globalThis.__dirname = path.dirname(url.fileURLToPath(import.meta.url))
 let packageJson = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8')
+    fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8')
 )
 
 program
