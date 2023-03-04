@@ -22,9 +22,26 @@ export class GeneralUtil {
     private static deepCopyRaw(obj: any, dest?: any): any {
         if (! this.isPlainObject(obj))
             return obj
-        dest = dest || {}
-        for (let k in obj) {
-            dest[k] = this.deepCopyRaw(obj[k])
+        if (Array.isArray(obj)) {
+            dest = dest || []
+            if (Array.isArray(dest)) {
+                for (let v of obj) {
+                    dest.push(v)
+                }
+            }
+            else {
+                let k = 0
+                for (let v of obj) {
+                    dest[k] = v
+                    k ++
+                }
+            }
+        }
+        else {
+            dest = dest || {}
+            for (let k in obj) {
+                dest[k] = this.deepCopyRaw(obj[k])
+            }
         }
         return dest
     }

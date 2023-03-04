@@ -28,7 +28,7 @@ let walk = (dir: string, handler: Function) => {
             handler(cpath)
     }
 }
-let err = function (msg: string) {
+let err = (msg: string) => {
     console.log(chalk.red('* Error when compiling: ' + msg))
     process.exit(1)
 }
@@ -115,7 +115,11 @@ let compile = (fpath: string) => {
     let c_my = '', c_mypre = '', c_gen = ''
     let vml: VMLNode[] | undefined
     const ui: T_VeppCtorUIOption[] = [], data: T_JSON = { $w: 0, $h: 0 }
-    try { vml = (VMLParser.read(src) as VMLNode).children } catch {}
+    try {
+        vml = (VMLParser.read(src) as VMLNode).children
+    } catch (ex) {
+        console.log(ex)
+    }
     if (! vml) {
         err('invalid .vepp file: ' + fpath)
         return

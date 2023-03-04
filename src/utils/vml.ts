@@ -29,12 +29,14 @@ export class VMLParser {
         return ! char || char == ' ' || char == '\t' || char == '\n' || char == '\r'
     }
     private static readPath(res: VMLNode, path: number[]): VMLNode {
+        if (! path) return res
         for (let v of path) {
             res = res.children[v]
         }
         return res
     }
     private static pushPath(res: VMLNode, path: number[], value: VMLNode): void {
+        if (! path) return
         let k = 0
         for (let v of path) {
             if (path.length - 1 > k)
