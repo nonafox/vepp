@@ -33,8 +33,7 @@ export class Vepp {
         try {
             const t = this
 
-            for (let n in json) {
-                const comp = json[n]
+            for (let comp of json) {
                 const tag = (comp.$tag as string).toUpperCase()
                 const needToFuck = needFuckWidgets.indexOf(tag) >= 0
                 
