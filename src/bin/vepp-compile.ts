@@ -40,19 +40,30 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
         let v = vml[k]
         let tag = v.tag
         if (tag == 'script')
-            err(`invalid 'script' element: ` + fpath)
+            err(`ignored 'script' element: ` + fpath)
         else if (! tag) continue
 
         let id = GUtil.tmpPrefix + GUtil.randomText()
         let props = GUtil.deepCopy(v.attrs)
         for (let k2 in props) {
             let v2 = props[k2]
+            if (! k2.startsWith(':') && ! k2.startsWith('@')) {
+                delete props[k2]
+                k2 = ':' + k2
+                v2 = `\`${v2.replace('`', '\\`')}\``
+                props[k2] = v2
+            }
+        }
+        for (let k2 in props) {
+            let v2 = props[k2]
             if (k2.startsWith(':')) {
                 delete props[k2]
                 k2 = k2.substring(1)
-                if (k2 == ':value') {
+                if (k2 == 'vepp_value') {
                     if (tag == 'radio_group') {
                         let tmpid = id + '_radios'
+                        if (':init' in props)
+                            err(`ignored 'init' property: ` + fpath)
                         if (! (tmpid in data))
                             data[tmpid] = {}
                         props.init = props.checked = `${tmpid}[${v2}]`
@@ -64,29 +75,23 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                     else if (tag == 'state_button') {
                         let tmpid = pid + '_radios'
                         if (! (tmpid in data))
-                            err(`invalid ':value' property: ` + fpath)
+                            err(`invalid 'vepp_value' property: ` + fpath)
                         if (! ('@vepp_init' in props))
                             props['@vepp_init'] = ''
                         props['@vepp_init'] = `${tmpid}[${v2}]=$widget;${props['@vepp_init']}`
                     }
                     else {
-                        err(`invalid ':value' property: ` + fpath)
+                        err(`invalid 'vepp_value' property: ` + fpath)
                     }
                 }
                 else {
                     props[k2] = v2
                 }
             }
-            else if (! k2.startsWith('@')) {
-                delete props[k2]
-                v2 = v2.replace('`', '\\`')
-                props[k2] = `\`${v2}\``
-            }
         }
         for (let k2 in props) {
             let v2 = props[k2]
             if (k2.startsWith('@')) {
-                delete props[k2]
                 props[k2] = `($arg)=>{${v2}}`
             }
         }

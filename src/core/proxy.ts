@@ -22,24 +22,25 @@ export function createProxy(obj: T_JSON, notifier: Function, _this: any, key: st
             const rk = key || k
             if (reactiveContext && typeof rk == 'string')
                 reactiveDeps.add(rk)
-            const raw = t[k]
-            if (typeof raw == 'function')
-                return (...args: any[]) => raw.call(proxy, ...args)
-            return raw
+            return t[k]
         },
         set(t: T_JSON, k: string | symbol, v: any): boolean {
+            const rk = key || k
             if (t[k] !== v) {
-                if (GUtil.isPlainObject(v) && typeof k == 'string')
-                    t[k] = createProxy(v, notifier, _this, key || k)
+                if (GUtil.isPlainObject(v) && typeof rk == 'string')
+                    t[k] = createProxy(v, notifier, _this, rk)
                 else
                     t[k] = v
-                notifier.call(_this, key || k)
+                if (typeof rk == 'string')
+                    notifier.call(_this, rk)
             }
             return true
         },
         deleteProperty(t: T_JSON, k: string | symbol): boolean {
+            const rk = key || k
             delete t[k]
-            notifier.call(_this, key || k)
+            if (typeof rk == 'string')
+                notifier.call(_this, rk)
             return true
         },
         getOwnPropertyDescriptor(t: T_JSON, k: string | symbol): PropertyDescriptor | undefined {
