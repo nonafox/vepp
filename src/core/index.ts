@@ -97,24 +97,23 @@ export class Vepp {
                         }
                     }
                     else {
-                        let rk = (hmUI.prop as T_JSON)[k.toUpperCase()],
-                            rk2 = k.toLowerCase()
+                        let rk = (hmUI.prop as T_JSON)[k.toUpperCase()]
                         const propUpdater = () => {
                             const deps = update!()
                             if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
                                 if (needToFuck
-                                        && (rk2 == 'x' || rk2 == 'y' || rk2 == 'w' || rk2 == 'h'))
-                                    xpropsBuf![rk2] = cv
+                                        && (k == 'x' || k == 'y' || k == 'w' || k == 'h'))
+                                    xpropsBuf![k] = cv
                             }
                             else if (needToFuck) {
-                                xpropsBuf![rk2] = cv
+                                xpropsBuf![k] = cv
                                 widget.setProperty(hmUI.prop.MORE, xpropsBuf)
-                                delete xpropsBuf![rk2]
+                                delete xpropsBuf![k]
                             }
                             else {
                                 widget.setProperty(hmUI.prop.MORE, {
-                                    [rk2]: cv
+                                    [k]: cv
                                 })
                             }
                             for (let depKey of deps) {
