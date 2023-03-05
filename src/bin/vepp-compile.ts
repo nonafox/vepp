@@ -105,6 +105,13 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 $children: children
             }
         )
+        for (let k2 in d) {
+            if (k2.endsWith('_func')) {
+                let v2 = d[k2]
+                delete d[k2]
+                d[k2] = v2
+            }
+        }
         if ('init' in d) {
             let v2 = d.init
             delete d.init

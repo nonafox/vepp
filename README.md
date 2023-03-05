@@ -14,6 +14,7 @@ You have to know, in ZeppOS, there are so many hard-to-solve limits:
 - `eval()` and `new Function()` are disabled
 - Rubbish widget system
 - Rubbish running efficiency (may be caused by hardware)
+- Deceptive APIs
 
 But maybe you don't believe, Vepp solves all of them:
 
@@ -21,6 +22,7 @@ But maybe you don't believe, Vepp solves all of them:
 - Build a pefect widget system in your favourite way
 - Make core codes short, easy and fast
 - Precompile the VML syntax (see below) by CLI, make it faster and faster
+- Deal with deceptive APIs for you
 
 Now, start learning and enjoy!
 
