@@ -125,7 +125,7 @@ export class VMLParser {
                     }
                     let path = openedPaths[openedPaths.length - 1],
                         tag = this.readPath(res, path).tag || '',
-                        isValidEndTag = '</' + tag == src.substring(k, tag.length + 2 + k)
+                        isValidEndTag = '</' + tag == this.formatName(src.substring(k, tag.length + 2 + k))
                     if ((! isTextOnly && v == '<') || (isTextOnly && isValidEndTag)) {
                         if (! isTextOnly && src.substring(k, `<!--`.length + k) == `<!--`) {
                             isComment = true

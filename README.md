@@ -123,7 +123,7 @@ Let's see an easy example of form:
 
 <radio-group
         :h="64"
-        select-src="select.png",
+        select-src="select.png"
         unselect-src="unselect.png"
         :vepp-value="checked">
     <state-button :x="40" :y="200" :w="64" :h="64" vepp-value="A"></state-button>

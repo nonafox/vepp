@@ -87,7 +87,6 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
             let v2 = props[k2]
             if (k2.startsWith('@')) {
                 delete props[k2]
-                k2 = k2.replace('-', '_')
                 props[k2] = `($arg)=>{${v2}}`
             }
         }
@@ -114,15 +113,12 @@ let compile = (fpath: string) => {
     let rfname = path.basename(fpath)
     let fname = rfname.substring(0, rfname.length - path.extname(fpath).length)
     let c_my = '', c_mypre = '', c_gen = ''
-    let vml: VMLNode[] | undefined
+    let vml: VMLNode[] | undefined, tmp: VMLNode | string
     const ui: T_VeppCtorUIOption[] = [], data: T_JSON = { $w: 0, $h: 0 }
-    try {
-        vml = (VMLParser.read(src) as VMLNode).children
-    } catch (ex) {
-        console.log(ex)
-    }
+    tmp = VMLParser.read(src)
+    try { vml = (tmp as VMLNode).children } catch {}
     if (! vml) {
-        err('invalid .vepp file: ' + fpath)
+        err(tmp + ': ' + fpath)
         return
     }
     
