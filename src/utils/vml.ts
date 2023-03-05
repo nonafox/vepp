@@ -61,6 +61,9 @@ export class VMLParser {
         else
             return this.nextChildPath(res, oldPath)
     }
+    private static formatName(name: string): string {
+        return name.toLowerCase().replace('-', '_')
+    }
     public static read(src: string): VMLNode | string {
         let arr = (src + ' ').split('')
 
@@ -84,7 +87,7 @@ export class VMLParser {
                         }
                         else if (! isTagRead && ! this.isValidName(v) && currentTag) {
                             isTagRead = true
-                            currentTag = currentTag.toLowerCase()
+                            currentTag = this.formatName(currentTag)
                             currentVNode.tag = currentTag
                             
                             isSelfClosingTag = GUtil.selfClosingTags.indexOf(currentTag) >= 0
@@ -103,19 +106,19 @@ export class VMLParser {
                             }
                         }
                         if (! isEndTag && v == '>' && quoteAvailable) {
-                            currentAttrs[currentAttrsRaw.toLowerCase()] = quoteText || ''
+                            currentAttrs[this.formatName(currentAttrsRaw)] = quoteText || ''
                             quoteText = currentAttrsRaw = ''
                             quoteAvailable = false
                         }
                         if (! isEndTag && (this.isVoidChar(v) || v == '>')
                                 && quoteAvailable) {
-                            currentAttrs[currentAttrsRaw.toLowerCase()] = quoteText || ''
+                            currentAttrs[this.formatName(currentAttrsRaw)] = quoteText || ''
                             quoteText = currentAttrsRaw = ''
                             quoteAvailable = false
                         }
                         else if (! isEndTag && (this.isVoidChar(v) || v == '>')
                                 && currentAttrsRaw) {
-                            currentAttrs[currentAttrsRaw.toLowerCase()] = ''
+                            currentAttrs[this.formatName(currentAttrsRaw)] = ''
                             quoteText = currentAttrsRaw = ''
                             quoteAvailable = false
                         }

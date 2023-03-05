@@ -38,7 +38,7 @@ let warn = (msg: string) => {
 let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data: T_JSON, pid: string = 'ROOT') => {
     for (let k in vml) {
         let v = vml[k]
-        let tag = v.tag ? v.tag.replace('-', '_') : null
+        let tag = v.tag
         if (tag == 'script')
             err(`invalid 'script' element: ` + fpath)
         else if (! tag) continue
@@ -46,10 +46,9 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
         let id = GUtil.tmpPrefix + GUtil.randomText()
         let props = GUtil.deepCopy(v.attrs)
         for (let k2 in props) {
-            let v2 = props[k2], ok2 = k2
-            k2 = k2.replace('-', '_')
+            let v2 = props[k2]
             if (k2.startsWith(':')) {
-                delete props[ok2]
+                delete props[k2]
                 k2 = k2.substring(1)
                 if (k2 == ':value') {
                     if (tag == 'radio_group') {
@@ -66,9 +65,9 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                         let tmpid = pid + '_radios'
                         if (! (tmpid in data))
                             err(`invalid ':value' property: ` + fpath)
-                        if (! ('@@init' in props))
-                            props['@@init'] = ''
-                        props['@@init'] = `${tmpid}[${v2}]=$widget;` + props['@@init']
+                        if (! ('@vepp_init' in props))
+                            props['@vepp_init'] = ''
+                        props['@vepp_init'] = `${tmpid}[${v2}]=$widget;${props['@vepp_init']}`
                     }
                     else {
                         err(`invalid ':value' property: ` + fpath)
@@ -79,7 +78,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 }
             }
             else if (! k2.startsWith('@')) {
-                delete props[ok2]
+                delete props[k2]
                 v2 = v2.replace('`', '\\`')
                 props[k2] = `\`${v2}\``
             }

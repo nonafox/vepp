@@ -32,6 +32,7 @@ Let's see what ZeppOS apps made by Vepp is like:
 <!-- this is the special syntax called VML (Vepp Markup Language), you can use it in `.vepp` suffixed files -->
 
 <!-- each common element stands for a widget in ZeppOS -->
+<!-- and each common property stands for a parameter or a property of a widget in ZeppOS -->
 <text
     :h="
         // there are two built-in variables: `$w` and `$h`, they reference to device's width and height
@@ -117,17 +118,17 @@ Although Vepp follows the native ZeppOS's APIs overall, for example, you can do 
 Let's see an easy example of form:
 
 ```html
-<!-- you can make two-way bindings on forms by the special property `:value` -->
+<!-- you can make two-way bindings on forms by the special property `vepp-value` -->
 <!-- NOTICE!! Only the widget `RADIO_GROUP` supports this feature now, wait for a while as I'm hard developing! -->
 
 <radio-group
         :h="64"
         select-src="select.png",
         unselect-src="unselect.png"
-        ::value="checked">
-    <state-button :x="40" :y="200" :w="64" :h="64" ::value="'A'"></state-button>
-    <state-button :x="190" :y="200" :w="64" :h="64" ::value="'B'"></state-button>
-    <state-button :x="340" :y="200" :w="64" :h="64" ::value="'C'"></state-button>
+        :vepp-value="checked">
+    <state-button :x="40" :y="200" :w="64" :h="64" vepp-value="A"></state-button>
+    <state-button :x="190" :y="200" :w="64" :h="64" vepp-value="B"></state-button>
+    <state-button :x="340" :y="200" :w="64" :h="64" vepp-value="C"></state-button>
 </radio-group>
 <text :y="100" :h="100" :text="'checked: ' + checked"></text>
 
@@ -136,7 +137,7 @@ Let's see an easy example of form:
 </script>
 ```
 
-Is it pretty enough? You needn't do anything but to set the special built-in property named `:value`, and then you achieve the data stream on forms! I think it's no need for me to introduce more in this example :)
+Is it pretty enough? You needn't do anything but to set the special built-in property named `vepp-value`, and then you achieve the data stream on forms! I think it's no need for me to introduce more in this example :)
 
 # Polyfills
 

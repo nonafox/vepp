@@ -78,7 +78,7 @@ export class Vepp {
                         let rk2 = k.substring(1),
                             rk = (hmUI.event as T_JSON)[rk2.toUpperCase()]
                         update!()
-                        if (rk2 == '@init') {
+                        if (rk2 == 'vepp_init') {
                             initEvent = cv
                         }
                         else {

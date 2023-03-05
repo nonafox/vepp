@@ -32,6 +32,7 @@
 <!-- 这里用的是一种骚气的语法—— VML (Vepp Markup Language)，用 .vepp 作后缀即可启用 VML ！ -->
 
 <!-- 每个普通 VML 元素代表一个 ZeppOS 原生控件 -->
+<!-- 每个普通 VML property 代表原生 ZeppOS 中控件的 parameter 或 property -->
 <text
     :h="
         // 我们有两个内置变量 $w 和 $h ，它们分别指向设备的宽、高
@@ -116,17 +117,17 @@ vepp auto
 让我们先来看个表单的小例子：
 
 ```html
-<!-- 通过特殊 property `:value` 来实现表单的双向绑定 -->
+<!-- 通过特殊 property `vepp-value` 来实现表单的双向绑定 -->
 <!-- 注意！目前只适配了 RADIO_GROUP 的双向绑定功能，更多精彩敬请期待！ -->
 
 <radio-group
         :h="64"
         select-src="select.png",
         unselect-src="unselect.png"
-        ::value="checked">
-    <state-button :x="40" :y="200" :w="64" :h="64" ::value="'A'"></state-button>
-    <state-button :x="190" :y="200" :w="64" :h="64" ::value="'B'"></state-button>
-    <state-button :x="340" :y="200" :w="64" :h="64" ::value="'C'"></state-button>
+        :vepp-value="checked">
+    <state-button :x="40" :y="200" :w="64" :h="64" vepp-value="A"></state-button>
+    <state-button :x="190" :y="200" :w="64" :h="64" vepp-value="B"></state-button>
+    <state-button :x="340" :y="200" :w="64" :h="64" vepp-value="C"></state-button>
 </radio-group>
 <text :y="100" :h="100" :text="'checked: ' + checked"></text>
 
@@ -135,7 +136,7 @@ vepp auto
 </script>
 ```
 
-够简单了吧？除了设置名为 `:value` 的 property ，你无需写任何逻辑代码即可实现表单的数据流。我认为没有必要介绍更多详细内容了！
+够简单了吧？除了设置名为 `vepp-value` 的 property ，你无需写任何逻辑代码即可实现表单的数据流。我认为没有必要介绍更多详细内容了！
 
 # Polyfills
 
