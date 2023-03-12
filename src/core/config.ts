@@ -2,7 +2,7 @@ export const DEVICE_WIDTH = hmSetting.getDeviceInfo().width
 export const DEVICE_HEIGHT = hmSetting.getDeviceInfo().height
 
 export const needFuckWidgets = [
-    'BUTTON', 'FILL_RECT', 'RADIO_GROUP'
+    'BUTTON', 'FILL_RECT', 'RADIO_GROUP', 'CHECKBOX_GROUP'
 ]
 export const defaultConfig: { [k: string]: { [k2: string]: any } } = {
     '': {
