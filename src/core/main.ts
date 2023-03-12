@@ -151,7 +151,7 @@ export class Vepp {
             throw new Error(`Error when Vepp does update: ` + ex)
         }
     }
-    public watch(func: Function, callback: Function): any {
+    public watch(func: Function): any {
         let ret
         const deps = createReactiveContext(function (this: T_JSON) {
             ret = func!.call(this.data, this)
@@ -160,16 +160,16 @@ export class Vepp {
         for (let v of deps) {
             if (! (v in this.deps))
                 this.deps[v] = new Set()
-            this.deps[v].add(callback)
+            this.deps[v].add(func)
         }
 
         return ret
     }
-    public unwatch(callback: Function): void {
+    public unwatch(func: Function): void {
         for (let k in this.deps) {
             let v = this.deps[k]
-            if (v.has(callback))
-                v.delete(callback)
+            if (v.has(func))
+                v.delete(func)
         }
     }
 }
