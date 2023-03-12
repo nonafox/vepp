@@ -210,46 +210,4 @@ export class VMLParser {
         res.children.pop()
         return res
     }
-    public static patch(tree: VMLNode | VMLNode[], plainMode = false): string {
-        if (! Array.isArray(tree))
-            return this.patch(tree.children, plainMode)
-        
-        let res = ''
-        for (let k in tree) {
-            let v = tree[k],
-                singleTag = GUtil.selfClosingTags.indexOf(v.tag!) >= 0
-            
-            if (v.tag) {
-                let children = v.children.length
-                        ? this.patch(v.children, GUtil.textOnlyTags.indexOf(v.tag) >= 0)
-                        : '',
-                    attrs = ''
-                for (let k2 in v.attrs) {
-                    let v2 = v.attrs[k2] + ''
-                    v2 = v2.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-                    if (v2 !== '')
-                        attrs += ` ${k2}="${v2}"`
-                    else
-                        attrs += ` ${k2}`
-                }
-                let slash = singleTag && v.tag != '!doctype' ? '/' : ''
-                let rtag = singleTag ? '' : `</${v.tag}>`
-                res += `<${v.tag}${attrs}${slash}>${children}${rtag}`
-            }
-            else if (v.type == VMLNodeType.text) {
-                if (plainMode)
-                    res += v.text
-                else
-                    res += v.text!
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/(\s|&nbsp;)+/g, ' ')
-            }
-            else if (v.type == VMLNodeType.comment) {
-                res += `<!--${v.text}-->`
-            }
-        }
-        
-        return res
-    }
 }
