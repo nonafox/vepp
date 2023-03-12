@@ -104,4 +104,13 @@ export class GeneralUtil {
             return res
         }
     }
+    public static emitVector(vector: any[] | Set<any>, data: any): void {
+        if (Array.isArray(vector)) {
+            if (! vector.includes(data))
+                vector.push(data)
+        }
+        else {
+            vector.add(data)
+        }
+    }
 }

@@ -73,11 +73,11 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             props['check_func'] = `(...$args)=>{if($args[2]){${v2}=Object.keys(${tmpid})[$args[1]]};${oldcode}}`
                         }
                         else {
-                            props.init = `${tmpid}[(${v2})[0]]`
+                            props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
-                            props['@vepp_init'] = `$vepp.watch(()=>void ${v2},()=>{for(let ${GUtil.tmpPrefix}v of ${v2}){$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v])}});${props['@vepp_init']}`
-                            props['check_func'] = `function ${GUtil.tmpPrefix}emit(a,b){if(Array.isArray(a)&&a.indexOf(b)<0) a.push(b) else a.add(b)};(...$args)=>{if($args[2]){${GUtil.tmpPrefix}emit(${v2},Object.keys(${tmpid})[$args[1]])};${oldcode}}`
+                            props['@vepp_init'] = `$vepp.watch(()=>void ${v2},()=>{for(let ${GUtil.tmpPrefix}v of ${v2}) $widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v])});${props['@vepp_init']}`
+                            props['check_func'] = `(...$args)=>{if($args[2]){${GUtil.tmpPrefix}GUtil.emitVector(${v2},Object.keys(${tmpid})[$args[1]])};${oldcode}}`
                         }
                     }
                     else if (tag == 'state_button') {
@@ -159,12 +159,12 @@ let compile = (fpath: string) => {
     }
     compileUI(fpath, vml, ui, data)
     
-    c_gen += `$vepp = new Vepp({ ui: ${JSON.stringify(ui)}, data: {} }, true); `
+    c_gen += `$vepp = new ${GUtil.tmpPrefix}Vepp({ ui: ${JSON.stringify(ui)}, data: {} }, true); `
     c_gen += `let $pre_data = ${JSON.stringify(data)}; for (let k in $pre_data) { $vepp.data[k] = $pre_data[k]; }; $pre_data = null; (function () { ${c_mypre} }).call($vepp.data); $vepp.init(); `
     c_gen += `(function () { this.$w = $w; this.$h = $h; ${c_my}; }).call($vepp.data); `
     
     let aname = path.dirname(fpath) + '/' + fname + '.js'
-    let res = `var { width: $w, height: $h } = hmSetting.getDeviceInfo(); import { Vepp } from 'vepp/dist/core/main.js'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
+    let res = `var { width: $w, height: $h } = hmSetting.getDeviceInfo(); import { Vepp as ${GUtil.tmpPrefix}Vepp } from 'vepp/dist/core/main.js'; import { GUtil as ${GUtil.tmpPrefix}GUtil } from 'vepp/dist/utils/general.js'; var $vepp; Page({ build() { ${c_gen} }, onDestroy() { $vepp = null; } });`
     fs.writeFileSync(aname, res)
 }
 if (fs.existsSync(rpath + 'page/'))
