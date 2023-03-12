@@ -77,11 +77,12 @@ Let's see what ZeppOS apps made by Vepp is like:
     // `this`              :    the short form of $vepp.data, i.e. your reactive variables
     let watcher = () => {
         console.log(`variable 'txt' was first changed as: ` + this.txt)
-    	// use `$vepp.unwatch(key, func)` to cancel watching
-        $vepp.unwatch('txt', watcher)
+    	// use `$vepp.unwatch(callback)` to cancel watching
+        $vepp.unwatch(watcher)
     }
-    // use `$vepp.watch(key, func)` to watch your reactive variables
-    $vepp.watch('txt', watcher)
+    // use `$vepp.watch(func, callback)` to watch your reactive variables
+    // the parameter `func` takes a function that describes which variables you want to watch
+    $vepp.watch(() => void this.txt, watcher)
 </script>
 ```
 
@@ -120,7 +121,7 @@ Although Vepp follows the native ZeppOS's APIs overall, for example, you can do 
 Let's see an easy example of form:
 
 ```html
-<!-- you can make two-way bindings on forms by the special property `vepp-value` -->
+<!-- you can make two-way bindings on forms by the special property `vepp_value` -->
 <!-- NOTICE!! Only the widget `RADIO_GROUP` supports this feature now, wait for a while as I'm hard developing! -->
 
 <radio-group
@@ -139,7 +140,7 @@ Let's see an easy example of form:
 </script>
 ```
 
-Is it pretty enough? You needn't do anything but to set the special built-in property named `vepp-value`, and then you achieve the data stream on forms! I think it's no need for me to introduce more in this example :)
+Is it pretty enough? You needn't do anything but to set the special built-in property named `vepp_value`, and then you achieve the data stream on forms! I think it's no need for me to introduce more in this example :)
 
 # Polyfills
 

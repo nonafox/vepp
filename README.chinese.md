@@ -76,11 +76,12 @@
     // this       ：相当于 $vepp.data ，指向你所有的响应性变量
     let watcher = () => {
         console.log(`variable 'txt' was first changed as: ` + this.txt)
-    	// 用 $vepp.unwatch(key, func) 来取消监听变量
-        $vepp.unwatch('txt', watcher)
+    	// 用 $vepp.unwatch(callback) 来取消监听变量
+        $vepp.unwatch(watcher)
     }
-    // 用 $vepp.watch(key, func) 来监听变量
-    $vepp.watch('txt', watcher)
+    // 用 $vepp.watch(func, callback) 来监听变量
+    // 参数 func 为一个函数，其应说明需要监听的变量
+    $vepp.watch(() => void this.txt, watcher)
 </script>
 ```
 
@@ -119,7 +120,7 @@ vepp auto
 让我们先来看个表单的小例子：
 
 ```html
-<!-- 通过特殊 property `vepp-value` 来实现表单的双向绑定 -->
+<!-- 通过特殊 property `vepp_value` 来实现表单的双向绑定 -->
 <!-- 注意！目前只适配了 RADIO_GROUP 的双向绑定功能，更多精彩敬请期待！ -->
 
 <radio-group
@@ -138,7 +139,7 @@ vepp auto
 </script>
 ```
 
-够简单了吧？除了设置名为 `vepp-value` 的 property ，你无需写任何逻辑代码即可实现表单的数据流。我认为没有必要介绍更多详细内容了！
+够简单了吧？除了设置名为 `vepp_value` 的 property ，你无需写任何逻辑代码即可实现表单的数据流。我认为没有必要介绍更多详细内容了！
 
 # Polyfills
 

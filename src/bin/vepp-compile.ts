@@ -60,20 +60,28 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 delete props[k2]
                 k2 = k2.substring(1)
                 if (k2 == 'vepp_value') {
-                    if (tag == 'radio_group') {
-                        let tmpid = id + '_radios'
+                    if (tag == 'radio_group' || tag == 'checkbox_group') {
+                        let tmpid = id + '_options'
                         if (':init' in props)
                             err(`ignored 'init' property: ` + fpath)
-                        if (! (tmpid in data))
-                            data[tmpid] = {}
-                        props.init = props.checked = `${tmpid}[${v2}]`
+                        data[tmpid] = {}
                         let oldcode = props['check_func']
                             ? `(${props['check_func']})(...$args)`
                             : ''
-                        props['check_func'] = `(...$args)=>{if($args[2]){${v2}=Object.keys(${tmpid})[$args[1]]};${oldcode}}`
+                        if (tag == 'radio_group') {
+                            props.init = props.checked = `${tmpid}[${v2}]`
+                            props['check_func'] = `(...$args)=>{if($args[2]){${v2}=Object.keys(${tmpid})[$args[1]]};${oldcode}}`
+                        }
+                        else {
+                            props.init = `${tmpid}[(${v2})[0]]`
+                            if (! ('@vepp_init' in props))
+                                props['@vepp_init'] = ''
+                            props['@vepp_init'] = `$vepp.watch(()=>void ${v2},()=>{for(let ${GUtil.tmpPrefix}v of ${v2}){$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v])}});${props['@vepp_init']}`
+                            props['check_func'] = `function ${GUtil.tmpPrefix}emit(a,b){if(Array.isArray(a)&&a.indexOf(b)<0) a.push(b) else a.add(b)};(...$args)=>{if($args[2]){${GUtil.tmpPrefix}emit(${v2},Object.keys(${tmpid})[$args[1]])};${oldcode}}`
+                        }
                     }
                     else if (tag == 'state_button') {
-                        let tmpid = pid + '_radios'
+                        let tmpid = pid + '_options'
                         if (! (tmpid in data))
                             err(`invalid 'vepp_value' property: ` + fpath)
                         if (! ('@vepp_init' in props))
