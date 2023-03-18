@@ -16,11 +16,11 @@ export class GeneralUtil {
         }
         return res
     }
-    public static isProxiable(obj: any): boolean {
-        return obj && (obj.constructor === Object || Array.isArray(obj) || obj.constructor == Set)
+    public static isPlainObject(obj: any): boolean {
+        return obj && (obj.constructor === Object || Array.isArray(obj))
     }
     private static deepCopyRaw(obj: any, dest?: any): any {
-        if (! this.isProxiable(obj))
+        if (! this.isPlainObject(obj))
             return obj
         if (Array.isArray(obj)) {
             dest = dest || []

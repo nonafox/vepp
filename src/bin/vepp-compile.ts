@@ -73,10 +73,10 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             props['check_func'] = `(...$args)=>{if($args[2])${v2}=Object.keys(${tmpid})[$args[1]];${oldcode}}`
                         }
                         else {
-                            props.init = `${tmpid}[${v2}.values().next().value]`
+                            props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
-                            props['@vepp_init'] = `if(${v2}.__proto__!=Set.prototype)throw new Error("the binding variable must be a Set.");$vepp.watch(()=>{for(let ${GUtil.tmpPrefix}v of ${v2}) $widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v])});${props['@vepp_init']}`
+                            props['@vepp_init'] = `$vepp.watch(()=>{for(let ${GUtil.tmpPrefix}v of ${v2}) $widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v])});${props['@vepp_init']}`
                             props['check_func'] = `(...$args)=>{${v2}[$args[2]?'add':'delete'](Object.keys(${tmpid})[$args[1]]);${oldcode}}`
                         }
                     }

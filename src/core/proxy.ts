@@ -47,7 +47,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
 
     for (let k in obj) {
         let v = obj[k]
-        if (GUtil.isProxiable(v)) {
+        if (GUtil.isPlainObject(v)) {
             obj[k] = createProxy(v, _this, key || k, rdeps)
         }
     }
@@ -62,7 +62,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
         set(t: T_JSON, k: string | symbol, v: any): boolean {
             const rk = key || k
             if (t[k] !== v) {
-                if (GUtil.isProxiable(v) && typeof rk == 'string')
+                if (GUtil.isPlainObject(v) && typeof rk == 'string')
                     t[k] = createProxy(v, _this, rk)
                 else
                     t[k] = v
@@ -90,4 +90,15 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
     })
 
     return proxy
+}
+
+(Array.prototype as any).add = function (this: any, item: any): any {
+    if (! this.includes(item))
+        this.push(item)
+    return this
+}
+(Array.prototype as any).delete = function (this: any, item: any): boolean {
+    if ((item = this.indexOf(item)) >= 0)
+        return ! void this.splice(item, 1)
+    return false
 }
