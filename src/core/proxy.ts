@@ -92,12 +92,13 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
     return proxy
 }
 
-(Array.prototype as any).add = function (this: any, item: any): any {
+const arrayCtor = Array.prototype as any
+arrayCtor.add = function (this: any, item: any): any {
     if (! this.includes(item))
         this.push(item)
     return this
 }
-(Array.prototype as any).delete = function (this: any, item: any): boolean {
+arrayCtor.delete = function (this: any, item: any): boolean {
     if ((item = this.indexOf(item)) >= 0)
         return ! void this.splice(item, 1)
     return false
