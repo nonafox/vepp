@@ -128,12 +128,16 @@ export class Vepp {
                 addCallback: (key: any) => void, delCallback: (key: any) => void
             ): void {
         for (let v of buf) {
-            if (! newest.includes(v))
+            if (! newest.includes(v)) {
                 delCallback(v)
+                newest.push(v)
+            }
         }
         for (let v of newest) {
-            if (! buf.includes(v))
+            if (! buf.includes(v)) {
                 addCallback(v)
+                buf.push(v)
+            }
         }
     }
 }
