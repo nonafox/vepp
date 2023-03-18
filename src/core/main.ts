@@ -117,26 +117,26 @@ export class Vepp {
     }
     public watch(func: Function): any {
         let ret
-        createReactiveContext(function (this: T_JSON) {
+        createReactiveContext(function (this: Vepp) {
             ret = func!.call(this.data, this)
         }, this)
         return ret
     }
     public [GUtil.tmpPrefix + 'diff']
             (
-                buf: any[], newest: any[],
+                buf: Set<any>, newest: any[],
                 addCallback: (key: any) => void, delCallback: (key: any) => void
             ): void {
         for (let v of buf) {
             if (! newest.includes(v)) {
                 delCallback(v)
-                newest.push(v)
+                buf.delete(v)
             }
         }
         for (let v of newest) {
-            if (! buf.includes(v)) {
+            if (! buf.has(v)) {
                 addCallback(v)
-                buf.push(v)
+                buf.add(v)
             }
         }
     }
