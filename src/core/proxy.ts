@@ -94,12 +94,13 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
 }
 
 const arrayProto = Array.prototype as any
-arrayProto.splice = function (...args: any[]): any {
+const oldArraySplice = arrayProto.splice
+arrayProto.splice = function (...args: any[]) {
     Vepp.rest()
-    this.splice(...args)
+    oldArraySplice.call(this, ...args)
     Vepp.wake()
     return this
-}
+};
 arrayProto.add = function (this: any, item: any): any {
     if (! this.includes(item))
         this.push(item)

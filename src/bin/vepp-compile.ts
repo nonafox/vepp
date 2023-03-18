@@ -82,7 +82,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
-                            props['@vepp_init'] = `const ${GUtil.tmpPrefix}buf=new Set;$vepp.watch(()=>{$vepp.${GUtil.tmpPrefix}diff(${GUtil.tmpPrefix}buf,${v2},${GUtil.tmpPrefix}v=>{$vepp.rest();$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v]);$vepp.wake()},${GUtil.tmpPrefix}v=>{$vepp.rest();$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[${GUtil.tmpPrefix}v]);$vepp.wake()})});${props['@vepp_init']}`
+                            props['@vepp_init'] = `const ${GUtil.tmpPrefix}buf=new Set;$vepp.watch(()=>{$vepp.${GUtil.tmpPrefix}diff(${GUtil.tmpPrefix}buf,${v2},${GUtil.tmpPrefix}v=>{$vepp.constructor.rest();$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v]);$vepp.constructor.wake()},${GUtil.tmpPrefix}v=>{$vepp.constructor.rest();$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[${GUtil.tmpPrefix}v]);$vepp.constructor.wake()})});${props['@vepp_init']}`
                             props['check_func'] = `(...$args)=>{${v2}[$args[2]?'add':'delete'](Object.keys(${tmpid})[$args[1]]);${oldcode}}`
                         }
                     }

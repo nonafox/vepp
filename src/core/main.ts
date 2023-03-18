@@ -8,7 +8,7 @@ export type T_VeppCtorUIOption = { [_: string]: string | T_VeppCtorUIOption[] }
 
 interface I_VeppCtorOption {
     ui: T_VeppCtorUIOption[]
-    data: Map<string, any>
+    data: T_JSON
 }
 
 export class Vepp {
