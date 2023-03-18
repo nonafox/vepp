@@ -7,7 +7,7 @@ import ora from 'ora'
 
 import { T_VeppCtorUIOption } from '../core/main.js'
 import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
-import { VMLParser, VMLNode } from '../utils/vml.js'
+import { VMLParser, VMLNode, VMLNodeAttrs } from '../utils/vml.js'
 
 program.parse(process.argv)
 let rpath = path.resolve('.') + '/'
@@ -44,7 +44,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
         else if (! tag) continue
 
         let id = GUtil.tmpPrefix + GUtil.randomText()
-        let props = GUtil.deepCopy(v.attrs)
+        let props: VMLNodeAttrs = GUtil.deepCopy(v.attrs) as VMLNodeAttrs
         for (let k2 in props) {
             let v2 = props[k2]
             if (! k2.startsWith(':') && ! k2.startsWith('@')) {

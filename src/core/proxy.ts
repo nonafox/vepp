@@ -26,20 +26,21 @@ export function createReactiveContext(func: Function, _this: any): void {
     handler()
 }
 
-export function createProxy(obj: T_JSON, _this: any, key: string | null = null): any {
+export function createProxy(obj: T_JSON, _this: any, key: string | null = null, deps: Deps | null = null): any {
+    const rdeps = deps || new Deps()
+
     for (let k in obj) {
         let v = obj[k]
         if (GUtil.isPlainObject(v)) {
-            obj[k] = createProxy(v, _this, key || k)
+            obj[k] = createProxy(v, _this, key || k, rdeps)
         }
     }
     
-    const deps = new Deps()
     const proxy = new Proxy<T_JSON>(obj, {
         get(t: T_JSON, k: string | symbol): any {
             const rk = key || k
             if (reactiveContext && typeof rk == 'string')
-                deps.add(rk, reactiveContext)
+                rdeps.add(rk, reactiveContext)
             return t[k]
         },
         set(t: T_JSON, k: string | symbol, v: any): boolean {
@@ -50,7 +51,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null):
                 else
                     t[k] = v
                 if (typeof rk == 'string')
-                    deps.notify(rk, _this)
+                    rdeps.notify(rk, _this)
             }
             return true
         },
@@ -58,7 +59,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null):
             const rk = key || k
             delete t[k]
             if (typeof rk == 'string')
-                deps.notify(rk, _this)
+                rdeps.notify(rk, _this)
             return true
         },
         getOwnPropertyDescriptor(t: T_JSON, k: string | symbol): PropertyDescriptor | undefined {
