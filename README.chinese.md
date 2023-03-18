@@ -75,13 +75,10 @@
     // $vepp      ：指向 Vepp 实例
     // this       ：相当于 $vepp.data ，指向你所有的响应性变量
     let watcher = () => {
-        console.log(`variable 'txt' was first changed as: ` + this.txt)
-    	// 用 $vepp.unwatch(func) 来取消监听变量
-        $vepp.unwatch(watcher)
+        console.log(`variable 'txt' was changed as: ` + this.txt)
     }
     // 用 $vepp.watch(func) 来监听变量
     // 当被 func 依赖的变量发生更改时，func 将被重新执行
-    // 警告！ func 依赖项的增加目前不会进行同步
     $vepp.watch(watcher)
 </script>
 ```

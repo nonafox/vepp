@@ -1,38 +1,56 @@
 import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
 
-let reactiveContext: Function | null = null, reactiveDeps: Set<string> = new Set()
-export function createReactiveContext(func: Function, _this: any): Set<string> {
-    reactiveContext = () => func.call(_this)
-    reactiveDeps = new Set()
-    reactiveContext()
-    reactiveContext = null
-    return reactiveDeps
+class Deps {
+    private deps: { [_: string]: Set<Function> } = {}
+
+    public add(key: string, func: Function) {
+        if (! (key in this.deps))
+            this.deps[key] = new Set<Function>()
+        this.deps[key].add(func)
+    }
+    public notify(key: string, _this: any): void {
+        if (key in this.deps) {
+            for (let v of this.deps[key])
+                v.call(_this, key)
+        }
+    }
 }
 
-export function createProxy(obj: T_JSON, notifier: Function, _this: any, key: string | null = null): any {
+let reactiveContext: Function | null = null
+export function createReactiveContext(func: Function, _this: any): void {
+    let handler = () => {
+        reactiveContext = handler
+        func.call(_this)
+        reactiveContext = null
+    }
+    handler()
+}
+
+export function createProxy(obj: T_JSON, _this: any, key: string | null = null): any {
     for (let k in obj) {
         let v = obj[k]
         if (GUtil.isPlainObject(v)) {
-            obj[k] = createProxy(v, notifier, _this, key || k)
+            obj[k] = createProxy(v, _this, key || k)
         }
     }
     
-    const proxy = new Proxy(obj, {
+    const deps = new Deps()
+    const proxy = new Proxy<T_JSON>(obj, {
         get(t: T_JSON, k: string | symbol): any {
             const rk = key || k
             if (reactiveContext && typeof rk == 'string')
-                reactiveDeps.add(rk)
+                deps.add(rk, reactiveContext)
             return t[k]
         },
         set(t: T_JSON, k: string | symbol, v: any): boolean {
             const rk = key || k
             if (t[k] !== v) {
                 if (GUtil.isPlainObject(v) && typeof rk == 'string')
-                    t[k] = createProxy(v, notifier, _this, rk)
+                    t[k] = createProxy(v, _this, rk)
                 else
                     t[k] = v
                 if (typeof rk == 'string')
-                    notifier.call(_this, rk)
+                    deps.notify(rk, _this)
             }
             return true
         },
@@ -40,7 +58,7 @@ export function createProxy(obj: T_JSON, notifier: Function, _this: any, key: st
             const rk = key || k
             delete t[k]
             if (typeof rk == 'string')
-                notifier.call(_this, rk)
+                deps.notify(rk, _this)
             return true
         },
         getOwnPropertyDescriptor(t: T_JSON, k: string | symbol): PropertyDescriptor | undefined {

@@ -12,8 +12,6 @@ interface I_VeppCtorOption {
 }
 
 export class Vepp {
-    private inited: boolean = false
-    private deps: { [_: string]: Set<Function> } = {}
     private ui: T_VeppCtorUIOption[]
     public data: any
 
@@ -22,12 +20,7 @@ export class Vepp {
             throw new Error(`Invalid usage of Vepp.`)
         }
         this.ui = opts.ui || []
-        this.data = createProxy(opts.data || {}, this.update, this)
-    }
-    private dep(key: string, func: Function): void {
-        if (! (key in this.deps))
-            this.deps[key] = new Set()
-        this.deps[key].add(func)
+        this.data = createProxy(opts.data || {}, this)
     }
     public init(json: T_VeppCtorUIOption[] = this.ui, ctor: any = hmUI): void {
         try {
@@ -47,7 +40,6 @@ export class Vepp {
                 if (! widget)
                     break
                 const eventsBuf: { [_: string]: Function } = {},
-                    depsBuf = new Set(),
                     xpropsBuf: { [_: string]: any } | null = needToFuck
                         ? {
                             x: defaultProps.x,
@@ -66,18 +58,14 @@ export class Vepp {
                             `with(this){return(${v})}`
                         )
                         : null
-                    const update = typeof v == 'string'
-                        ? () => {
-                            return createReactiveContext(function (this: T_JSON) {
-                                cv = handledFunc!.call(this.data, this, widget)
-                            }, t)
-                        }
-                        : null
+                    const funcCalc = () => {
+                        cv = handledFunc!.call(this.data, this, widget)
+                    }
 
                     if (k.startsWith('@')) {
                         let rk2 = k.substring(1),
                             rk = (hmUI.event as T_JSON)[rk2.toUpperCase()]
-                        update!()
+                        funcCalc()
                         if (rk2 == 'vepp_init') {
                             initEvent = cv
                         }
@@ -99,7 +87,7 @@ export class Vepp {
                     else {
                         let rk = (hmUI.prop as T_JSON)[k.toUpperCase()]
                         const propUpdater = () => {
-                            const deps = update!()
+                            funcCalc()
                             if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
                                 if (needToFuck
@@ -116,14 +104,8 @@ export class Vepp {
                                     [k]: cv
                                 })
                             }
-                            for (let depKey of deps) {
-                                if (! depsBuf.has(depKey)) {
-                                    t.dep(depKey, propUpdater)
-                                    depsBuf.add(depKey)
-                                }
-                            }
                         }
-                        propUpdater()
+                        createReactiveContext(propUpdater, this)
                     }
                 }
                 
@@ -134,42 +116,12 @@ export class Vepp {
         catch (ex) {
             throw new Error(`Error when initializing Vepp: ` + ex)
         }
-        
-        this.inited = true
-    }
-    private update(key: string): void {
-        if (! this.inited) return
-        try {
-            if (! (key in this.deps))
-                this.deps[key] = new Set()
-            let v = this.deps[key]
-            for (let depItem of v) {
-                depItem.call(this)
-            }
-        }
-        catch (ex) {
-            throw new Error(`Error when Vepp does update: ` + ex)
-        }
     }
     public watch(func: Function): any {
         let ret
-        const deps = createReactiveContext(function (this: T_JSON) {
+        createReactiveContext(function (this: T_JSON) {
             ret = func!.call(this.data, this)
         }, this)
-
-        for (let v of deps) {
-            if (! (v in this.deps))
-                this.deps[v] = new Set()
-            this.deps[v].add(func)
-        }
-
         return ret
-    }
-    public unwatch(func: Function): void {
-        for (let k in this.deps) {
-            let v = this.deps[k]
-            if (v.has(func))
-                v.delete(func)
-        }
     }
 }

@@ -76,13 +76,10 @@ Let's see what ZeppOS apps made by Vepp is like:
     // `$vepp`             :    references to your Vepp instance
     // `this`              :    the short form of $vepp.data, i.e. your reactive variables
     let watcher = () => {
-        console.log(`variable 'txt' was first changed as: ` + this.txt)
-    	// use `$vepp.unwatch(func)` to cancel watching
-        $vepp.unwatch(watcher)
+        console.log(`variable 'txt' was changed as: ` + this.txt)
     }
     // use `$vepp.watch(func)` to watch your reactive variables
     // when the variables which are depended by the `func` are changed, `func` will be triggered
-    // WARNING: dependencies' increase of `func` won't be synced so far
     $vepp.watch(watcher)
 </script>
 ```
