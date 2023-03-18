@@ -18,7 +18,8 @@ class Deps {
 
 let reactiveContext: Function | null = null
 export function createReactiveContext(func: (key: string | null) => void, _this: any): void {
-    let handling = false, debts: (string | null)[] = []
+    let handling = false
+    const debts: (string | null)[] = []
     let handler = (key: string | null) => {
         if (handling) {
             debts.push(key)
@@ -46,7 +47,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
 
     for (let k in obj) {
         let v = obj[k]
-        if (GUtil.isPlainObject(v)) {
+        if (GUtil.isProxiable(v)) {
             obj[k] = createProxy(v, _this, key || k, rdeps)
         }
     }
@@ -61,7 +62,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
         set(t: T_JSON, k: string | symbol, v: any): boolean {
             const rk = key || k
             if (t[k] !== v) {
-                if (GUtil.isPlainObject(v) && typeof rk == 'string')
+                if (GUtil.isProxiable(v) && typeof rk == 'string')
                     t[k] = createProxy(v, _this, rk)
                 else
                     t[k] = v
