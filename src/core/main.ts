@@ -14,6 +14,7 @@ interface I_VeppCtorOption {
 export class Vepp {
     private ui: T_VeppCtorUIOption[]
     public data: any
+    public static isRest: boolean = false
 
     public constructor(opts: I_VeppCtorOption, builtin: boolean = false) {
         if (! builtin) {
@@ -85,6 +86,7 @@ export class Vepp {
                     else {
                         let rk = (hmUI.prop as T_JSON)[k.toUpperCase()]
                         const propUpdater = () => {
+                            if (Vepp.isRest) return
                             funcCalc()
                             if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
@@ -118,6 +120,7 @@ export class Vepp {
     public watch(func: Function): any {
         let ret
         createReactiveContext(function (this: Vepp) {
+            if (Vepp.isRest) return
             ret = func!.call(this.data, this)
         }, this)
         return ret
@@ -139,5 +142,11 @@ export class Vepp {
                 buf.add(v)
             }
         }
+    }
+    public static rest(): void {
+        Vepp.isRest = true
+    }
+    public static wake(): void {
+        Vepp.isRest = false
     }
 }

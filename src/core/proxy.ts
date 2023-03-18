@@ -1,4 +1,5 @@
 import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
+import { Vepp } from './main.js'
 
 class Deps {
     private deps: { [_: string]: Set<Function> } = {}
@@ -63,7 +64,7 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
             const rk = key || k
             if (t[k] !== v) {
                 if (GUtil.isPlainObject(v) && typeof rk == 'string')
-                    t[k] = createProxy(v, _this, rk)
+                    t[k] = createProxy(v, _this, rk, rdeps)
                 else
                     t[k] = v
                 if (typeof rk == 'string')
@@ -92,13 +93,19 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
     return proxy
 }
 
-const arrayCtor = Array.prototype as any
-arrayCtor.add = function (this: any, item: any): any {
+const arrayProto = Array.prototype as any
+arrayProto.splice = function (...args: any[]): any {
+    Vepp.rest()
+    this.splice(...args)
+    Vepp.wake()
+    return this
+}
+arrayProto.add = function (this: any, item: any): any {
     if (! this.includes(item))
         this.push(item)
     return this
 }
-arrayCtor.delete = function (this: any, item: any): boolean {
+arrayProto.delete = function (this: any, item: any): boolean {
     if ((item = this.indexOf(item)) >= 0)
         return ! void this.splice(item, 1)
     return false
