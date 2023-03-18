@@ -1,6 +1,6 @@
 import './polyfills.js'
 
-import { T_JSON } from '../utils/general.js'
+import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
 import { createProxy, createReactiveContext } from './proxy.js'
 import { needFuckWidgets, defaultConfig } from './config.js'
 
@@ -121,5 +121,19 @@ export class Vepp {
             ret = func!.call(this.data, this)
         }, this)
         return ret
+    }
+    public [GUtil.tmpPrefix + 'diff']
+            (
+                buf: any[], newest: any[],
+                addCallback: (key: any) => void, delCallback: (key: any) => void
+            ): void {
+        for (let v of buf) {
+            if (! newest.includes(v))
+                delCallback(v)
+        }
+        for (let v of newest) {
+            if (! buf.includes(v))
+                addCallback(v)
+        }
     }
 }

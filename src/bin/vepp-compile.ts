@@ -59,10 +59,16 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
             if (k2.startsWith(':')) {
                 delete props[k2]
                 k2 = k2.substring(1)
+                props[k2] = v2
+            }
+        }
+        for (let k2 in props) {
+            let v2 = props[k2]
+            if (! k2.startsWith('@')) {
                 if (k2 == 'vepp_value') {
                     if (tag == 'radio_group' || tag == 'checkbox_group') {
                         let tmpid = id + '_options'
-                        if (':init' in props)
+                        if ('init' in props)
                             err(`ignored 'init' property: ` + fpath)
                         data[tmpid] = {}
                         let oldcode = props['check_func']
@@ -76,7 +82,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
-                            props['@vepp_init'] = `$vepp.watch(()=>{for(let ${GUtil.tmpPrefix}v of ${v2}) $widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v])});${props['@vepp_init']}`
+                            props['@vepp_init'] = `const ${GUtil.tmpPrefix}buf=[];$vepp.watch(()=>{$vepp.${GUtil.tmpPrefix}diff(${GUtil.tmpPrefix}buf,${tmpid},${GUtil.tmpPrefix}v=>$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v]),${GUtil.tmpPrefix}v=>$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[${GUtil.tmpPrefix}v]))});${props['@vepp_init']}`
                             props['check_func'] = `(...$args)=>{${v2}[$args[2]?'add':'delete'](Object.keys(${tmpid})[$args[1]]);${oldcode}}`
                         }
                     }
@@ -91,9 +97,6 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                     else {
                         err(`invalid 'vepp_value' property: ` + fpath)
                     }
-                }
-                else {
-                    props[k2] = v2
                 }
             }
         }
