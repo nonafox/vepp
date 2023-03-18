@@ -17,13 +17,28 @@ class Deps {
 }
 
 let reactiveContext: Function | null = null
-export function createReactiveContext(func: Function, _this: any): void {
-    let handler = () => {
+export function createReactiveContext(func: (key: string | null) => void, _this: any): void {
+    let handling = false, debts: (string | null)[] = []
+    let handler = (key: string | null) => {
+        if (handling) {
+            debts.push(key)
+            return
+        }
+        handling = true
+
+        const oldContext = reactiveContext
         reactiveContext = handler
-        func.call(_this)
-        reactiveContext = null
+        func.call(_this, key)
+        reactiveContext = oldContext
+
+        if (debts.length > 0) {
+            let buf = debts[0]
+            debts.splice(0, 1)
+            handler(buf)
+        }
+        handling = false
     }
-    handler()
+    handler('')
 }
 
 export function createProxy(obj: T_JSON, _this: any, key: string | null = null, deps: Deps | null = null): any {

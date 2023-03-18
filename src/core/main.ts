@@ -24,8 +24,6 @@ export class Vepp {
     }
     public init(json: T_VeppCtorUIOption[] = this.ui, ctor: any = hmUI): void {
         try {
-            const t = this
-
             for (let comp of json) {
                 const tag = (comp.$tag as string).toUpperCase()
                 const needToFuck = needFuckWidgets.indexOf(tag) >= 0
