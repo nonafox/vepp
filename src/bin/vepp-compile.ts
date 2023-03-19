@@ -67,10 +67,11 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
             if (! k2.startsWith('@')) {
                 if (k2 == 'vepp_value') {
                     if (tag == 'radio_group' || tag == 'checkbox_group') {
-                        const tmpid = id + '_options'
+                        const tmpid = id + '_options', tmpid2 = id + '_buf'
                         if ('init' in props)
                             err(`ignored 'init' property: ` + fpath)
                         data[tmpid] = {}
+                        data[tmpid2] = null
                         const oldcode = props['check_func']
                             ? `(${props['check_func']})(...$args)`
                             : ''
@@ -82,8 +83,8 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
-                            props['@vepp_init'] = `const ${GUtil.tmpPrefix}buf=new Set;$vepp.watch(()=>{$vepp.${GUtil.tmpPrefix}diff(${GUtil.tmpPrefix}buf,${v2},${GUtil.tmpPrefix}v=>{$vepp.constructor.rest();$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[${GUtil.tmpPrefix}v]);$vepp.constructor.wake()},${GUtil.tmpPrefix}v=>{$vepp.constructor.rest();$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[${GUtil.tmpPrefix}v]);$vepp.constructor.wake()})});${props['@vepp_init']}`
-                            props['check_func'] = `(...$args)=>{${v2}[$args[2]?'add':'delete'](Object.keys(${tmpid})[$args[1]]);${oldcode}}`
+                            props['@vepp_init'] = `$vepp.watch((a)=>{$vepp.util.diff(${tmpid2},${v2},v=>$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[v]),v=>$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[v]))});${props['@vepp_init']}`
+                            props['check_func'] = `(...$args)=>{!${tmpid2}&&(${tmpid2}=new Set);(()=>{const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v))})();${oldcode}}`
                         }
                     }
                     else if (tag == 'state_button') {

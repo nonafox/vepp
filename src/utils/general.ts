@@ -104,4 +104,21 @@ export class GeneralUtil {
             return res
         }
     }
+    public static diff(
+                buf: Set<any>, newest: Set<any>,
+                addCallback: (key: any) => void, delCallback: (key: any) => void
+            ): void {
+        for (let v of buf) {
+            if (! newest.has(v)) {
+                delCallback(v)
+                buf.delete(v)
+            }
+        }
+        for (let v of newest) {
+            if (! buf.has(v)) {
+                addCallback(v)
+                buf.add(v)
+            }
+        }
+    }
 }

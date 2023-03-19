@@ -100,7 +100,16 @@ arrayProto.splice = function (...args: any[]) {
     oldArraySplice.call(this, ...args)
     Vepp.wake()
     return this
-};
+}
+arrayProto.has = arrayProto.includes
+Object.defineProperty(arrayProto, 'size', {
+    get() {
+        return this.length
+    },
+    writable: false,
+    enumerable: false,
+    configurable: false
+})
 arrayProto.add = function (this: any, item: any): any {
     if (! this.includes(item))
         this.push(item)
