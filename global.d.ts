@@ -1,5 +1,6 @@
+/// <reference path="node_modules/zeppos-device-types-v1/types/index.d.ts" />
+
 const DeviceRuntimeCore: any
-const timer: any
 
 declare module 'download-git-repo'
 declare module 'ora'
