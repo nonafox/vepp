@@ -106,7 +106,10 @@ export class Vepp {
                                 })
                             }
                         }
-                        createReactiveContext(propUpdater, this)
+                        if (k == 'init')
+                            propUpdater()
+                        else
+                            createReactiveContext(propUpdater, this)
                     }
                 }
                 

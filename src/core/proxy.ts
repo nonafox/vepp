@@ -40,7 +40,7 @@ export function createReactiveContext(func: (key: string | null) => void, _this:
         }
         handling = false
     }
-    handler('')
+    handler(null)
 }
 
 const proxyUpdateSymbol: Symbol = Symbol('proxyUpdate')
@@ -89,6 +89,8 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
             return Reflect.ownKeys(t)
         },
         has(t: T_JSON, k: string | symbol) {
+            if (k == proxyUpdateSymbol)
+                return true
             return k in t
         }
     })
@@ -99,10 +101,15 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
 const arrayProto = Array.prototype as any
 const oldArraySplice = arrayProto.splice
 arrayProto.splice = function (this: any[], ...args: any[]) {
-    Vepp.rest()
-    oldArraySplice.call(this, ...args)
-    Vepp.wake()
-    this[proxyUpdateSymbol as any]()
+    if ((proxyUpdateSymbol as any) in this) {
+        Vepp.rest()
+        oldArraySplice.call(this, ...args)
+        Vepp.wake()
+        this[proxyUpdateSymbol as any]()
+    }
+    else {
+        oldArraySplice.call(this, ...args)
+    }
     return this
 }
 arrayProto.has = arrayProto.includes

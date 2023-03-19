@@ -119,9 +119,9 @@ vepp auto
 
 ```html
 <!-- 通过特殊 property `vepp_value` 来实现表单的双向绑定 -->
-<!-- 注意！目前只适配了 RADIO_GROUP 的双向绑定功能，更多精彩敬请期待！ -->
+<!-- 注意！目前只适配了 radio_group, checkbox_group 控件的双向绑定功能，更多精彩敬请期待！ -->
 
-<radio-group
+<checkbox-group
         :h="64"
         select-src="select.png"
         unselect-src="unselect.png"
@@ -129,11 +129,12 @@ vepp auto
     <state-button :x="40" :y="200" :w="64" :h="64" vepp-value="A"></state-button>
     <state-button :x="190" :y="200" :w="64" :h="64" vepp-value="B"></state-button>
     <state-button :x="340" :y="200" :w="64" :h="64" vepp-value="C"></state-button>
-</radio-group>
+</checkbox-group>
 <text :y="100" :h="100" :text="'checked: ' + checked"></text>
+<button :y="400" :h="100" text="check all" :click-func="()=>{checked=['A','B','C']}"></button>
 
 <script pre>
-    this.checked = 'C';
+    this.checked = ['B']
 </script>
 ```
 
@@ -154,3 +155,11 @@ Vepp 为你准备了多样、实用的 polyfills ，这里给出它们的列表�
 - function `clearImmediate`
 - function `console.time`
 - function `console.timeEnd`
+
+# 其他
+
+- Vepp 的依赖追踪仅限于 `Array` 和纯粹 `Object` （构造函数为 `Object` 的对象），其他诸如 `Map` 、 `Set` 等未做适配
+- VML 中的字符 `-` 和 `_` 等效； VML 对大小写不敏感
+- VML 的特殊属性 `vepp_value` 不具有响应性
+- VML 的特殊属性 `vepp_value` 有双重含义：在 `state_button` 控件上其表现为声明选项值，在形如 `xxx_group` 的表单父控件上表现为对属性指定的变量进行双向绑定
+- VML 中在 `xxx_group` 控件上定义的 `vepp_value` 特殊属性的值在不同具体表单控件上的要求不同：如在单选框 `radio_group` 上使用 `vepp_value` 属性，需要填入一个任意变量；在多选框 `checkbox_group` 上使用则需填入一个数组变量

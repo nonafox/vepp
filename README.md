@@ -120,9 +120,9 @@ Let's see an easy example of form:
 
 ```html
 <!-- you can make two-way bindings on forms by the special property `vepp_value` -->
-<!-- NOTICE!! Only the widget `RADIO_GROUP` supports this feature now, wait for a while as I'm hard developing! -->
+<!-- NOTICE!! Only the widgets `radio_group`, `checkbox_group` supports this feature now, wait for a while as I'm hard developing! -->
 
-<radio-group
+<checkbox-group
         :h="64"
         select-src="select.png"
         unselect-src="unselect.png"
@@ -130,11 +130,12 @@ Let's see an easy example of form:
     <state-button :x="40" :y="200" :w="64" :h="64" vepp-value="A"></state-button>
     <state-button :x="190" :y="200" :w="64" :h="64" vepp-value="B"></state-button>
     <state-button :x="340" :y="200" :w="64" :h="64" vepp-value="C"></state-button>
-</radio-group>
+</checkbox-group>
 <text :y="100" :h="100" :text="'checked: ' + checked"></text>
+<button :y="400" :h="100" text="check all" :click-func="()=>{checked=['A','B','C']}"></button>
 
 <script pre>
-    this.checked = 'C';
+    this.checked = ['B']
 </script>
 ```
 
@@ -155,3 +156,11 @@ Vepp prepares varied polyfills for you, here we have the list of them:
 - function `clearImmediate`
 - function `console.time`
 - function `console.timeEnd`
+
+# Others
+
+- The dependencies tracking feature is only for `Array` and plain `Object` (with native constructor `Object`), other objects like `Map` and `Set` are NOT including
+- `-` and `_` are the same in VML; VML ignores case
+- special property `vepp_value` doesn't track its dependencies
+- special property `vepp_value` has two meanings: when set it on option widgets `state_botton`, it describes the values of the options; when set it on form widgets like `xxx_group`, Vepp will handle two-way binding for the given variable
+- special property `vepp_value` takes different value on different types of widgets: when on `radio_group`, it takes an `any` typed variable; when on `checkbox_group`, it takes an `Array` typed variable

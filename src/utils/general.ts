@@ -106,19 +106,25 @@ export class GeneralUtil {
     }
     public static diff(
                 buf: Set<any>, newest: Set<any>,
-                addCallback: (key: any) => void, delCallback: (key: any) => void
+                addsCallback: (key: any) => void, delsCallback: (key: any) => void
             ): void {
+        const adds: Set<(key: any) => void> = new Set,
+            dels: Set<(key: any) => void> = new Set
         for (let v of buf) {
             if (! newest.has(v)) {
-                delCallback(v)
+                dels.add(v)
                 buf.delete(v)
             }
         }
         for (let v of newest) {
             if (! buf.has(v)) {
-                addCallback(v)
+                adds.add(v)
                 buf.add(v)
             }
         }
+        for (let v of dels)
+            delsCallback(v)
+        for (let v of adds)
+            addsCallback(v)
     }
 }
