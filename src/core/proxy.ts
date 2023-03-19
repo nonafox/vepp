@@ -43,6 +43,7 @@ export function createReactiveContext(func: (key: string | null) => void, _this:
     handler('')
 }
 
+const proxyUpdateSymbol: Symbol = Symbol('proxyUpdate')
 export function createProxy(obj: T_JSON, _this: any, key: string | null = null, deps: Deps | null = null): any {
     const rdeps = deps || new Deps()
 
@@ -56,13 +57,15 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
     const proxy = new Proxy<T_JSON>(obj, {
         get(t: T_JSON, k: string | symbol): any {
             const rk = key || k
+            if (k == proxyUpdateSymbol)
+                return key ? () => rdeps.notify(key, _this) : () => {}
             if (reactiveContext && typeof rk == 'string')
                 rdeps.add(rk, reactiveContext)
             return t[k]
         },
         set(t: T_JSON, k: string | symbol, v: any): boolean {
             const rk = key || k
-            if (t[k] !== v) {
+            if (! (k in t) || t[k] !== v) {
                 if (GUtil.isPlainObject(v) && typeof rk == 'string')
                     t[k] = createProxy(v, _this, rk, rdeps)
                 else
@@ -95,27 +98,20 @@ export function createProxy(obj: T_JSON, _this: any, key: string | null = null, 
 
 const arrayProto = Array.prototype as any
 const oldArraySplice = arrayProto.splice
-arrayProto.splice = function (...args: any[]) {
+arrayProto.splice = function (this: any[], ...args: any[]) {
     Vepp.rest()
     oldArraySplice.call(this, ...args)
     Vepp.wake()
+    this[proxyUpdateSymbol as any]()
     return this
 }
 arrayProto.has = arrayProto.includes
-Object.defineProperty(arrayProto, 'size', {
-    get() {
-        return this.length
-    },
-    writable: false,
-    enumerable: false,
-    configurable: false
-})
-arrayProto.add = function (this: any, item: any): any {
+arrayProto.add = function (this: any[], item: any): any[] {
     if (! this.includes(item))
         this.push(item)
     return this
 }
-arrayProto.delete = function (this: any, item: any): boolean {
+arrayProto.delete = function (this: any[], item: any): boolean {
     if ((item = this.indexOf(item)) >= 0)
         return ! void this.splice(item, 1)
     return false
