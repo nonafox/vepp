@@ -62,7 +62,7 @@ export class VMLParser {
             return this.nextChildPath(res, oldPath)
     }
     private static formatName(name: string): string {
-        return name.toLowerCase().replaceAll('-', '_')
+        return name.toLowerCase().replace(/\-/g, '_')
     }
     public static read(src: string): VMLNode | string {
         let arr = (src + ' ').split('')

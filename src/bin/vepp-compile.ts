@@ -51,7 +51,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
             if (! k2.startsWith(':') && ! k2.startsWith('@')) {
                 delete props[k2]
                 k2 = ':' + k2
-                v2 = `\`${v2.replaceAll('`', '\\`')}\``
+                v2 = `\`${v2.replace(/`/g, '\\`')}\``
                 props[k2] = v2
             }
         }
