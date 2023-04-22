@@ -1,7 +1,7 @@
 {
   "name": "vepp",
   "type": "module",
-  "version": "0.11.20",
+  "version": "0.11.21",
   "description": "A powerful framework for ZeppOS.",
   "main": "dist/core/index.js",
   "bin": {

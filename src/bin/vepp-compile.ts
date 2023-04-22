@@ -67,6 +67,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
             let v2 = props[k2]
             if (! k2.startsWith('@')) {
                 if (k2 == 'vepp_value') {
+                    delete props[k2]
                     if (tag == 'radio_group' || tag == 'checkbox_group') {
                         const tmpid = id + '_options', tmpid2 = id + '_buf'
                         if ('init' in props)

@@ -107,7 +107,7 @@ export class Vepp {
                             if (needToFuck && k in xpropsBuf!)
                                 xpropsBuf![k] = cv
                         }
-                        if (noTrackingProps.includes(k))
+                        if (noTrackingProps.includes(k) || k.endsWith('_func'))
                             propUpdater()
                         else
                             createReactiveContext(propUpdater, this)
@@ -122,11 +122,16 @@ export class Vepp {
             throw new Error(`Error when initializing Vepp: ` + ex)
         }
     }
-    public watch(dest: string | Function): any {
+    public watch(
+                dest: string | Function,
+                handler: Function = typeof dest == 'function' ? dest : () => {}
+            ): any {
         let ret
         createReactiveContext(function (this: Vepp) {
             if (Vepp.restStack) return
-            ret = typeof dest == 'string' ? this.data[dest] : dest.call(this.data, this)
+            ret = typeof dest == 'string'
+                ? (handler.call(this.data, this), this.data[dest])
+                : dest.call(this.data, this)
         }, this)
         return ret
     }
