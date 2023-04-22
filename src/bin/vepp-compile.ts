@@ -101,7 +101,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                         const oldcode = props.checked_change_func
                             ? `(${props.checked_change_func})(...$args)`
                             : ''
-                        props.checked_change_func = `(...$args)=>{${v2}=$args[1];${oldcode}}`
+                        props.checked_change_func = `$vepp.constructor.util.delay((...$args)=>{${v2}=$args[1];${oldcode}})`
                     }
                     else {
                         err(`invalid 'vepp_value' property: ` + fpath)
