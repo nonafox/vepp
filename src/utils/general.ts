@@ -6,7 +6,6 @@ export class GeneralUtil {
     public static selfClosingTags: string[] = []
     public static textOnlyTags: string[] = ['script']
     public static tmpPrefix: string = '$$'
-    public static noTrackProps: string[] = ['init']
     private static voidChar: string = '\uffff'
     
     public static randomText(len: number = 6): string {
@@ -128,5 +127,15 @@ export class GeneralUtil {
             delsCallback(v)
         for (let v of adds)
             addsCallback(v)
+    }
+    public static delay(func: Function): Function {
+        let first = true
+        return () => {
+            if (first) {
+                first = false
+                return
+            }
+            return func()
+        }
     }
 }

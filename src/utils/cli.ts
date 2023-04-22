@@ -2,7 +2,7 @@ import fs from 'fs'
 
 export class CLIUtil {
     public static priorAttrs: string[] = ['ok_text', 'cancel_text']
-    public static laterAttrs: string[] = ['init']
+    public static laterAttrs: string[] = ['checked', 'init']
 
     public static delDir(path: string): void {
         let arr = fs.readdirSync(path)

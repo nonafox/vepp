@@ -2,7 +2,7 @@ import './polyfills.js'
 
 import { GeneralUtil as GUtil, T_JSON, T_FREE } from '../utils/general.js'
 import { createProxy, createReactiveContext } from './proxy.js'
-import { needToFuckWidgets, needToFuckProps, defaultConfig } from './config.js'
+import { noTrackingProps, needToFuckWidgets, needToFuckProps, defaultConfig } from './config.js'
 
 export type T_VeppCtorUIOption = { [_: string]: string | T_VeppCtorUIOption[] }
 
@@ -43,7 +43,7 @@ export class Vepp {
                     (hmUI.widget as T_JSON)[tag],
                     defaultProps
                 )
-                if (! widget) break
+                if (! widget) continue
                 
                 const eventsBuf: { [_: string]: Function } = {},
                     xpropsBuf: T_FREE | null = needToFuck
@@ -89,23 +89,25 @@ export class Vepp {
                         const propUpdater = () => {
                             if (Vepp.restStack) return
                             funcCalc()
+
                             if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
-                                if (needToFuck && k in xpropsBuf!)
-                                    xpropsBuf![k] = cv
                             }
                             else if (needToFuck) {
                                 xpropsBuf![k] = cv
                                 widget.setProperty(hmUI.prop.MORE, xpropsBuf)
-                                delete xpropsBuf![k]
+                                if (! needToFuckProps.includes(k))
+                                    delete xpropsBuf![k]
                             }
                             else {
                                 widget.setProperty(hmUI.prop.MORE, {
                                     [k]: cv
                                 })
                             }
+                            if (needToFuck && k in xpropsBuf!)
+                                xpropsBuf![k] = cv
                         }
-                        if (GUtil.noTrackProps.includes(k))
+                        if (noTrackingProps.includes(k))
                             propUpdater()
                         else
                             createReactiveContext(propUpdater, this)

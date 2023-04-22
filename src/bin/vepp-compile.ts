@@ -101,7 +101,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                         const oldcode = props.checked_change_func
                             ? `(${props.checked_change_func})(...$args)`
                             : ''
-                        props.checked_change_func = `(...$args)=>{${v2}=$args[1];${oldcode}}`
+                        props.checked_change_func = `$vepp.constructor.util.delay((...$args)=>{${v2}=$args[1];${oldcode}})`
                     }
                     else {
                         err(`invalid 'vepp_value' property: ` + fpath)
@@ -134,15 +134,15 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 buf2[k2] = v2
         }
         d = Object.assign(buf1, buf2)
-        for (let k2 in d) {
-            if (k2.endsWith('_func')) {
+        for (let k2 of CUtil.laterAttrs) {
+            if (k2 in d) {
                 let v2 = d[k2]
                 delete d[k2]
                 d[k2] = v2
             }
         }
-        for (let k2 of CUtil.laterAttrs) {
-            if (k2 in d) {
+        for (let k2 in d) {
+            if (k2.endsWith('_func')) {
                 let v2 = d[k2]
                 delete d[k2]
                 d[k2] = v2

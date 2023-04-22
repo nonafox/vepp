@@ -3,6 +3,7 @@ import { T_FREE } from '../utils/general'
 export const DEVICE_WIDTH = hmSetting.getDeviceInfo().width
 export const DEVICE_HEIGHT = hmSetting.getDeviceInfo().height
 
+export const noTrackingProps = ['init']
 export const needToFuckWidgets = [
     'button', 'fill_rect', 'radio_group', 'checkbox_group', 'slide_switch'
 ]
