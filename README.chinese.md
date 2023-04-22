@@ -44,15 +44,15 @@
         /* 用 :name='expression' 的形式定义响应性 property */
         txt + '~'
     "
-    @click_up="
+    @click-up="
         /* 用 @name='statements' 的形式定义事件 */
         // 通过内置变量 $arg 获取事件参数
         test($arg);
         // 通过内置变量 $widget 获取当前控件对象（原生的 ZeppOS 控件对象）
         console.log('ID of the widget: ' + $widget.getId());
     "
-    @@init="
-        // @init 是一个内置事件，其在当前控件第一次被渲染后触发
+    @vepp-init="
+        // vepp_init 是一个内置事件，其在当前控件第一次被渲染后触发
         console.log('first rendered!!!')
     ">
 </text>

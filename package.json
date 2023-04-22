@@ -1,7 +1,7 @@
 {
   "name": "vepp",
   "type": "module",
-  "version": "0.11.10",
+  "version": "0.11.11",
   "description": "A light JavaScript framework with CLI for ZeppOS.",
   "main": "dist/core/index.js",
   "bin": {

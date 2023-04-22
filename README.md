@@ -44,15 +44,15 @@ Let's see what ZeppOS apps made by Vepp is like:
         /* use `:name='expression'` to set a reactive property */
         txt + '~'
     "
-    @click_up="
+    @click-up="
         /* use `@name='statements'` to set an event */
         // get event argument by built-in variable `$arg`
         test($arg);
         // get the current widget object in native by `$widget`
         console.log('ID of the widget: ' + $widget.getId());
     "
-    @@init="
-        // this is our built-in event named `@init`
+    @vepp-init="
+        // this is our built-in event named `vepp_init`
         // the codes here will be executed after the widget is first rendered
         console.log('first rendered!!!')
     ">
