@@ -106,7 +106,7 @@ export class Vepp {
                                 })
                             }
                         }
-                        if (k == 'init')
+                        if (k in GUtil.noTrackProps)
                             propUpdater()
                         else
                             createReactiveContext(propUpdater, this)
@@ -121,11 +121,11 @@ export class Vepp {
             throw new Error(`Error when initializing Vepp: ` + ex)
         }
     }
-    public watch(func: Function): any {
+    public watch(dest: string | Function): any {
         let ret
         createReactiveContext(function (this: Vepp) {
             if (Vepp.restStack) return
-            ret = func!.call(this.data, this)
+            ret = typeof dest == 'string' ? this.data[dest] : dest.call(this.data, this)
         }, this)
         return ret
     }

@@ -8,6 +8,7 @@ import ora from 'ora'
 import { T_VeppCtorUIOption } from '../core/main.js'
 import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
 import { VMLParser, VMLNode, VMLNodeAttrs } from '../utils/vml.js'
+import { CLIUtil as CUtil } from '../utils/cli.js'
 
 program.parse(process.argv)
 let rpath = path.resolve('.') + '/'
@@ -72,19 +73,19 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             err(`ignored 'init' property: ` + fpath)
                         data[tmpid] = {}
                         data[tmpid2] = null
-                        const oldcode = props['check_func']
-                            ? `(${props['check_func']})(...$args)`
+                        const oldcode = props.check_func
+                            ? `(${props.check_func})(...$args)`
                             : ''
                         if (tag == 'radio_group') {
                             props.init = props.checked = `${tmpid}[${v2}]`
-                            props['check_func'] = `(...$args)=>{if($args[2])${v2}=Object.keys(${tmpid})[$args[1]];${oldcode}}`
+                            props.check_func = `(...$args)=>{if($args[2])${v2}=Object.keys(${tmpid})[$args[1]];${oldcode}}`
                         }
                         else {
                             props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
                             props['@vepp_init'] = `$vepp.watch(()=>{$vepp.constructor.util.diff(${tmpid2},${v2},v=>$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[v]),v=>$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[v]))});${props['@vepp_init']}`
-                            props['check_func'] = `(...$args)=>{!${tmpid2}&&(${tmpid2}=new Set([${v2}[0]]));(()=>{const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v))})();${oldcode}}`
+                            props.check_func = `(...$args)=>{!${tmpid2}&&(${tmpid2}=new Set([${v2}[0]]));(()=>{const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v))})();${oldcode}}`
                         }
                     }
                     else if (tag == 'state_button') {
@@ -94,6 +95,13 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                         if (! ('@vepp_init' in props))
                             props['@vepp_init'] = ''
                         props['@vepp_init'] = `${tmpid}[${v2}]=$widget;${props['@vepp_init']}`
+                    }
+                    else if (tag == 'slide_switch') {
+                        props.checked = `${v2}`
+                        const oldcode = props.checked_change_func
+                            ? `(${props.checked_change_func})(...$args)`
+                            : ''
+                        props.checked_change_func = `(...$args)=>{${v2}=$args[1];${oldcode}}`
                     }
                     else {
                         err(`invalid 'vepp_value' property: ` + fpath)
@@ -110,13 +118,22 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
         let children: T_VeppCtorUIOption[] = []
         compileUI(fpath, v.children, children, data, id)
 
-        let d = Object.assign(
+        let d: VMLNodeAttrs = Object.assign(
             props,
             {
                 $tag: tag,
                 $children: children
             }
         )
+        let buf1: VMLNodeAttrs = {}, buf2: VMLNodeAttrs = {}
+        for (let k2 in d) {
+            let v2 = d[k2]
+            if (k2 in CUtil.priorAttrs)
+                buf1[k2] = v2
+            else
+                buf2[k2] = v2
+        }
+        d = Object.assign(buf1, buf2)
         for (let k2 in d) {
             if (k2.endsWith('_func')) {
                 let v2 = d[k2]
@@ -124,10 +141,12 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 d[k2] = v2
             }
         }
-        if ('init' in d) {
-            let v2 = d.init
-            delete d.init
-            d.init = v2
+        for (let k2 in CUtil.laterAttrs) {
+            if (k2 in d) {
+                let v2 = d[k2]
+                delete d[k2]
+                d[k2] = v2
+            }
         }
         dest.push(d)
     }

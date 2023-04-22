@@ -4,7 +4,8 @@ export class GeneralUtil {
     public static ext: string = '.vepp'
     public static selfClosingTags: string[] = []
     public static textOnlyTags: string[] = ['script']
-    public static tmpPrefix: string = '$tmp__'
+    public static tmpPrefix: string = '$$'
+    public static noTrackProps: string[] = ['init']
     private static voidChar: string = '\uffff'
     
     public static randomText(len: number = 6): string {
