@@ -51,7 +51,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
             if (! k2.startsWith(':') && ! k2.startsWith('@')) {
                 delete props[k2]
                 k2 = ':' + k2
-                v2 = `\`${v2.replace('`', '\\`')}\``
+                v2 = `\`${v2.replaceAll('`', '\\`')}\``
                 props[k2] = v2
             }
         }
@@ -85,7 +85,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
                             props['@vepp_init'] = `$vepp.watch(()=>{$vepp.constructor.util.diff(${tmpid2},${v2},v=>$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[v]),v=>$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[v]))});${props['@vepp_init']}`
-                            props.check_func = `(...$args)=>{!${tmpid2}&&(${tmpid2}=new Set([${v2}[0]]));(()=>{const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v))})();${oldcode}}`
+                            props.check_func = `(...$args)=>{!${tmpid2}&&(${tmpid2}=new Set([${v2}[0]]));const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v));${oldcode}}`
                         }
                     }
                     else if (tag == 'state_button') {

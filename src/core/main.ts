@@ -2,7 +2,7 @@ import './polyfills.js'
 
 import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
 import { createProxy, createReactiveContext } from './proxy.js'
-import { needFuckWidgets, defaultConfig } from './config.js'
+import { needToFuckWidgets, defaultConfig } from './config.js'
 
 export type T_VeppCtorUIOption = { [_: string]: string | T_VeppCtorUIOption[] }
 
@@ -28,7 +28,7 @@ export class Vepp {
         try {
             for (let comp of json) {
                 const tag = (comp.$tag as string).toUpperCase()
-                const needToFuck = needFuckWidgets.indexOf(tag) >= 0
+                const needToFuck = needToFuckWidgets.indexOf(comp.$tag as string) >= 0
                 
                 const defaultProps = Object.assign(
                     {}, defaultConfig[tag] || defaultConfig['']
