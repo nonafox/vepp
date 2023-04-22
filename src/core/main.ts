@@ -106,7 +106,7 @@ export class Vepp {
                                 })
                             }
                         }
-                        if (k in GUtil.noTrackProps)
+                        if (GUtil.noTrackProps.includes(k))
                             propUpdater()
                         else
                             createReactiveContext(propUpdater, this)

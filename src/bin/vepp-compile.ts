@@ -128,7 +128,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
         let buf1: VMLNodeAttrs = {}, buf2: VMLNodeAttrs = {}
         for (let k2 in d) {
             let v2 = d[k2]
-            if (k2 in CUtil.priorAttrs)
+            if (CUtil.priorAttrs.includes(k2))
                 buf1[k2] = v2
             else
                 buf2[k2] = v2
@@ -141,7 +141,7 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 d[k2] = v2
             }
         }
-        for (let k2 in CUtil.laterAttrs) {
+        for (let k2 of CUtil.laterAttrs) {
             if (k2 in d) {
                 let v2 = d[k2]
                 delete d[k2]
