@@ -128,14 +128,4 @@ export class GeneralUtil {
         for (let v of adds)
             addsCallback(v)
     }
-    public static delay(func: Function): Function {
-        let first = true
-        return () => {
-            if (first) {
-                first = false
-                return
-            }
-            return func()
-        }
-    }
 }
