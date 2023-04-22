@@ -1,13 +1,13 @@
 {
   "name": "vepp",
   "type": "module",
-  "version": "0.11.11",
+  "version": "0.11.12",
   "description": "A powerful framework for ZeppOS.",
   "main": "dist/core/index.js",
   "bin": {
     "vepp": "dist/bin/vepp.js",
     "vepp-init": "dist/bin/vepp-init.js",
-    "vepp-complile": "dist/bin/vepp-complile.js",
+    "vepp-complile": "dist/bin/vepp-compile.js",
     "vepp-auto": "dist/bin/vepp-auto.js"
   },
   "scripts": {
