@@ -1,8 +1,8 @@
 import './polyfills.js'
 
-import { GeneralUtil as GUtil, T_JSON } from '../utils/general.js'
+import { GeneralUtil as GUtil, T_JSON, T_FREE } from '../utils/general.js'
 import { createProxy, createReactiveContext } from './proxy.js'
-import { needToFuckWidgets, defaultConfig } from './config.js'
+import { needToFuckWidgets, needToFuckProps, defaultConfig } from './config.js'
 
 export type T_VeppCtorUIOption = { [_: string]: string | T_VeppCtorUIOption[] }
 
@@ -26,28 +26,28 @@ export class Vepp {
     }
     public init(json: T_VeppCtorUIOption[] = this.ui, ctor: any = hmUI): void {
         try {
+            const initXpropsBuf = (props: T_FREE): T_FREE => {
+                const ret: T_FREE = {}
+                for (let k of needToFuckProps)
+                    ret[k] = props[k]
+                return ret
+            }
+
             for (let comp of json) {
-                const tag = (comp.$tag as string).toUpperCase()
-                const needToFuck = needToFuckWidgets.indexOf(comp.$tag as string) >= 0
+                const rtag = comp.$tag as string
+                const tag = rtag.toUpperCase()
+                const needToFuck = needToFuckWidgets.includes(rtag)
                 
-                const defaultProps = Object.assign(
-                    {}, defaultConfig[tag] || defaultConfig['']
-                )
+                const defaultProps = GUtil.deepCopy(defaultConfig[rtag] || defaultConfig[''])
                 const widget = ctor.createWidget(
                     (hmUI.widget as T_JSON)[tag],
                     defaultProps
                 )
-                if (! widget)
-                    break
+                if (! widget) break
+                
                 const eventsBuf: { [_: string]: Function } = {},
-                    xpropsBuf: { [_: string]: any } | null = needToFuck
-                        ? {
-                            x: defaultProps.x,
-                            y: defaultProps.y,
-                            w: defaultProps.w,
-                            h: defaultProps.h
-                        }
-                        : null
+                    xpropsBuf: T_FREE | null = needToFuck
+                        ? initXpropsBuf(defaultProps) : null
                 let initEvent = null
                 
                 for (let k in comp) {
@@ -91,8 +91,7 @@ export class Vepp {
                             funcCalc()
                             if (typeof rk == 'number') {
                                 widget.setProperty(rk, cv)
-                                if (needToFuck
-                                        && (k == 'x' || k == 'y' || k == 'w' || k == 'h'))
+                                if (needToFuck && k in xpropsBuf!)
                                     xpropsBuf![k] = cv
                             }
                             else if (needToFuck) {

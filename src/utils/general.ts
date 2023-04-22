@@ -1,4 +1,5 @@
 export type T_JSON = { [_: string | symbol]: any }
+export type T_FREE = { [_: string]: any }
 
 export class GeneralUtil {
     public static ext: string = '.vepp'

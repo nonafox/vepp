@@ -1,17 +1,22 @@
+import { T_FREE } from '../utils/general'
+
 export const DEVICE_WIDTH = hmSetting.getDeviceInfo().width
 export const DEVICE_HEIGHT = hmSetting.getDeviceInfo().height
 
 export const needToFuckWidgets = [
-    'button', 'fill_rect', 'radio_group', 'checkbox_group'
+    'button', 'fill_rect', 'radio_group', 'checkbox_group', 'slide_switch'
 ]
-export const defaultConfig: { [k: string]: { [k2: string]: any } } = {
+export const needToFuckProps = [
+    'x', 'y', 'w', 'h', 'slide_select_x', 'slide_un_select_x'
+]
+export const defaultConfig: { [_: string]: T_FREE } = {
     '': {
         x: 0,
         y: 0,
         w: DEVICE_WIDTH,
         h: DEVICE_HEIGHT
     },
-    TEXT: {
+    text: {
         x: 0,
         y: 0,
         w: DEVICE_WIDTH,
@@ -20,10 +25,18 @@ export const defaultConfig: { [k: string]: { [k2: string]: any } } = {
         align_v: hmUI.align.CENTER_V,
         color: 0xffffff
     },
-    BUTTON: {
+    button: {
         x: 0,
         y: 0,
         w: 100,
         h: 40
+    },
+    slide_switch: {
+        x: 0,
+        y: 0,
+        w: 96,
+        h: 64,
+        slide_select_x: 40,
+        slide_un_select_x: 8
     }
 }
