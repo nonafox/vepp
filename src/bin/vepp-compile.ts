@@ -85,8 +85,8 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                             props.init = `${tmpid}[${v2}[0]]`
                             if (! ('@vepp_init' in props))
                                 props['@vepp_init'] = ''
-                            props['@vepp_init'] = `$vepp.watch(()=>{$vepp.constructor.util.diff(${tmpid2},${v2},v=>$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[v]),v=>$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[v]))});${props['@vepp_init']}`
-                            props.check_func = `(...$args)=>{!${tmpid2}&&(${tmpid2}=new Set([${v2}[0]]));const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v));${oldcode}}`
+                            props['@vepp_init'] = `!${tmpid2}&&(${tmpid2}=new Set([${v2}[0]]));$vepp.watch(()=>{$vepp.constructor.util.diff(${tmpid2},${v2},v=>$widget.setProperty(hmUI.prop.CHECKED,${tmpid}[v]),v=>$widget.setProperty(hmUI.prop.UNCHECKED,${tmpid}[v]))});${props['@vepp_init']}`
+                            props.check_func = `(...$args)=>{const k=$args[2]?'add':'delete',v=Object.keys(${tmpid})[$args[1]];v&&(${tmpid2}[k](v),${v2}[k](v));${oldcode}}`
                         }
                     }
                     else if (tag == 'state_button') {
@@ -135,15 +135,15 @@ let compileUI = (fpath: string, vml: VMLNode[], dest: T_VeppCtorUIOption[], data
                 buf2[k2] = v2
         }
         d = Object.assign(buf1, buf2)
-        for (let k2 of CUtil.laterAttrs) {
-            if (k2 in d) {
+        for (let k2 in d) {
+            if (k2.endsWith('_func')) {
                 let v2 = d[k2]
                 delete d[k2]
                 d[k2] = v2
             }
         }
-        for (let k2 in d) {
-            if (k2.endsWith('_func')) {
+        for (let k2 of CUtil.laterAttrs) {
+            if (k2 in d) {
                 let v2 = d[k2]
                 delete d[k2]
                 d[k2] = v2

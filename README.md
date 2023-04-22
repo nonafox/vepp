@@ -63,9 +63,10 @@ Let's see what ZeppOS apps made by Vepp is like:
 <!-- the following one has a `pre` attribute, the codes in it will be executed BEFORE Vepp's instance is initialized -->
 <script pre>
     /* you MUST declare your reactive variables here, otherwise they may cause crash when they are not declared or initialized but are used before the first render */
+
     // `this`              :    references to all your reactive variables
+
     this.txt = 'hello, world'
-    // don't worry about the reference of `this` in the lambda expression, Vepp solves it for you!
     this.test = (arg) => {
         console.log('event argument: ' + JSON.stringify(arg))
         this.txt += '!'
@@ -75,12 +76,12 @@ Let's see what ZeppOS apps made by Vepp is like:
 <script>
     // `$vepp`             :    references to your Vepp instance
     // `this`              :    the short form of $vepp.data, i.e. your reactive variables
-    let watcher = () => {
-        console.log(`variable 'txt' was changed as: ` + this.txt)
-    }
-    // use `$vepp.watch(func)` to watch your reactive variables
-    // when the variables which are depended by the `func` are changed, `func` will be triggered
-    $vepp.watch(watcher)
+
+    // use `$vepp.watch(...)` to watch your reactive variables
+    // when variable `txt` is changed, `func` will be triggered here:
+    $vepp.watch('txt', () => console.log(`[A] variable 'txt' was changed as: ` + this.txt))
+    // ditto:
+    $vepp.watch(() => console.log(`[B] variable 'txt' was changed as: ` + this.txt))
 </script>
 ```
 
@@ -120,7 +121,7 @@ Let's see an easy example of form:
 
 ```html
 <!-- you can make two-way bindings on forms by the special property `vepp_value` -->
-<!-- NOTICE!! Only the widgets `radio_group`, `checkbox_group` supports this feature now, wait for a while as I'm hard developing! -->
+<!-- NOTICE!! Only the widgets `radio_group`, `checkbox_group` and `slide-switch` supports this feature now, wait for a while as I'm hard developing! -->
 
 <checkbox-group
         :h="64"
@@ -157,10 +158,7 @@ Vepp prepares varied polyfills for you, here we have the list of them:
 - function `console.time`
 - function `console.timeEnd`
 
-# Others
+# Other details
 
 - The dependencies tracking feature is only for `Array` and plain `Object` (with native constructor `Object`), other objects like `Map` and `Set` are NOT including
 - `-` and `_` are the same in VML; VML ignores case
-- special property `vepp_value` doesn't track its dependencies
-- special property `vepp_value` has two meanings: when set it on option widgets `state_botton`, it describes the values of the options; when set it on form widgets like `xxx_group`, Vepp will handle two-way binding for the given variable
-- special property `vepp_value` takes different value on different types of widgets: when on `radio_group`, it takes an `any` typed variable; when on `checkbox_group`, it takes an `Array` typed variable

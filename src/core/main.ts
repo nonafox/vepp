@@ -104,8 +104,8 @@ export class Vepp {
                                     [k]: cv
                                 })
                             }
-                            if (needToFuck && k in xpropsBuf!)
-                                xpropsBuf![k] = cv
+                            if (xpropsBuf && k in xpropsBuf)
+                                xpropsBuf[k] = cv
                         }
                         if (noTrackingProps.includes(k) || k.endsWith('_func'))
                             propUpdater()
